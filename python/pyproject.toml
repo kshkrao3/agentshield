@@ -1,0 +1,38 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "agentshield"
+version = "0.1.0"
+description = "Runtime security middleware for LLM agents — prompt injection, tool misuse, and memory poisoning defense"
+readme = "../../README.md"
+license = {text = "Apache-2.0"}
+requires-python = ">=3.10"
+keywords = ["llm", "security", "agent", "prompt-injection", "ai-safety"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Topic :: Security",
+    "License :: OSI Approved :: Apache Software License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+dependencies = []  # zero required deps — optional extras below
+
+[project.optional-dependencies]
+langchain = ["langchain-core>=0.2"]
+llamaindex = ["llama-index-core>=0.10"]
+dev = ["pytest>=8", "pytest-asyncio>=0.23"]
+
+[project.urls]
+Homepage = "https://github.com/your-org/agentshield"
+Documentation = "https://agentshield.dev/docs"
+Repository = "https://github.com/your-org/agentshield"
+Issues = "https://github.com/your-org/agentshield/issues"
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]

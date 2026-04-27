@@ -1,0 +1,7 @@
+export { Shield, ShieldViolationError, shield } from "./shield.js";
+export { PromptFirewall } from "./firewall.js";
+export { ToolSentinel } from "./sentinel.js";
+export { MemoryGuard } from "./memory-guard.js";
+export { AuditEmitter } from "./audit.js";
+export type { Policy, ViolationMode, Sensitivity } from "./policy.js";
+export type { ViolationEvent, ViolationType, Severity } from "./audit.js";
