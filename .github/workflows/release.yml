@@ -38,11 +38,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "22"  # trusted publishing requires Node 22.14+
-      - name: Upgrade npm
-        run: npm install -g npm@latest
       - name: Build and publish
         run: |
           cd typescript
           npm ci
           npm run build
-          npm publish --access public  # no NODE_AUTH_TOKEN — uses OIDC
+          npx --yes npm@^11 publish --access public
