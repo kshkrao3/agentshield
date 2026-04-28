@@ -22,6 +22,8 @@ jobs:
       - name: Build
         run: |
           cd python
+          VERSION=${GITHUB_REF#refs/tags/v}
+          sed -i "s/^version = .*/version = \"$VERSION\"/" pyproject.toml
           pip install build
           python -m build
       - name: Publish
@@ -40,7 +42,9 @@ jobs:
           node-version: "22"  # trusted publishing requires Node 22.14+
       - name: Build and publish
         run: |
+          VERSION=${GITHUB_REF#refs/tags/v}
           cd typescript
+          npm version $VERSION --no-git-tag-version
           npm ci
           npm run build
           npx --yes npm@^11 publish --access public
