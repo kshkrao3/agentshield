@@ -13,9 +13,9 @@ Runtime security middleware for LLM agents. Drop it into your existing agent fra
 ## Install
 
 ```bash
-pip install agentshield
+pip install apexguard
 # or
-npm install @agentshield/sdk
+npm install apexguard
 ```
 
 ---
@@ -23,7 +23,7 @@ npm install @agentshield/sdk
 ## Python — 30-second quickstart
 
 ```python
-from agentshield import Shield, Policy
+from apexguard import Shield, Policy
 
 shield = Shield(
     policy=Policy(
@@ -42,7 +42,7 @@ result = secured_agent.invoke({"input": user_query})
 ### LangChain tool integration
 
 ```python
-from agentshield.adapters.langchain import shield_tools
+from apexguard.adapters.langchain import shield_tools
 
 secured_tools = shield_tools(your_tools, shield)
 agent = create_react_agent(llm, secured_tools, prompt)
@@ -59,7 +59,7 @@ shield.on_violation(lambda e: send_to_slack(e))
 ## TypeScript — 30-second quickstart
 
 ```typescript
-import { Shield } from '@agentshield/sdk';
+import { Shield } from 'apexguard';
 
 const s = new Shield({
   policy: {
@@ -76,7 +76,7 @@ const securedAgent = s.wrap(yourAgent);
 ### Vercel AI SDK tools
 
 ```typescript
-import { shieldTools } from '@agentshield/sdk/adapters/vercel-ai';
+import { shieldTools } from 'apexguard/adapters/vercel-ai';
 
 const result = await generateText({
   model: openai('gpt-4o'),
