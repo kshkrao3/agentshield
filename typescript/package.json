@@ -1,5 +1,5 @@
 {
-  "name": "apexguard",
+  "name": "@apexguard/sdk",
   "version": "0.1.0",
   "description": "Runtime security middleware for LLM agents — prompt injection, tool misuse, and memory poisoning defense",
   "license": "Apache-2.0",
@@ -31,6 +31,6 @@
   "keywords": ["llm", "security", "agent", "prompt-injection", "ai-safety"],
   "repository": {
     "type": "git",
-    "url": "https://github.com/your-org/agentshield"
+    "url": "https://github.com/kshkrao3/agentshield"
   }
 }
