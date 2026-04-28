@@ -13,7 +13,7 @@ Runtime security middleware for LLM agents. Drop it into your existing agent fra
 ## Install
 
 ```bash
-pip install agentshield
+pip install apexguard
 # or
 npm install @apexguard/sdk
 ```
@@ -23,7 +23,7 @@ npm install @apexguard/sdk
 ## Python — 30-second quickstart
 
 ```python
-from agentshield import Shield, Policy
+from apexguard import Shield, Policy
 
 shield = Shield(
     policy=Policy(
@@ -42,7 +42,7 @@ result = secured_agent.invoke({"input": user_query})
 ### LangChain tool integration
 
 ```python
-from agentshield.adapters.langchain import shield_tools
+from apexguard.adapters.langchain import shield_tools
 
 secured_tools = shield_tools(your_tools, shield)
 agent = create_react_agent(llm, secured_tools, prompt)
