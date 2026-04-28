@@ -43,6 +43,7 @@ jobs:
       - name: Build and publish
         run: |
           VERSION=${GITHUB_REF#refs/tags/v}
+          cp README.md typescript/README.md
           cd typescript
           npm version $VERSION --no-git-tag-version
           npm ci
