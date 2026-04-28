@@ -15,7 +15,7 @@ Runtime security middleware for LLM agents. Drop it into your existing agent fra
 ```bash
 pip install agentshield
 # or
-npm install @agentshield/sdk
+npm install @apexguard/sdk
 ```
 
 ---
@@ -59,7 +59,7 @@ shield.on_violation(lambda e: send_to_slack(e))
 ## TypeScript — 30-second quickstart
 
 ```typescript
-import { Shield } from '@agentshield/sdk';
+import { Shield } from '@apexguard/sdk';
 
 const s = new Shield({
   policy: {
@@ -76,7 +76,7 @@ const securedAgent = s.wrap(yourAgent);
 ### Vercel AI SDK tools
 
 ```typescript
-import { shieldTools } from '@agentshield/sdk/adapters/vercel-ai';
+import { shieldTools } from '@apexguard/sdk/adapters/vercel-ai';
 
 const result = await generateText({
   model: openai('gpt-4o'),
