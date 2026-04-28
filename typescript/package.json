@@ -1,6 +1,6 @@
 {
   "name": "@apexguard/sdk",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Runtime security middleware for LLM agents — prompt injection, tool misuse, and memory poisoning defense",
   "license": "Apache-2.0",
   "type": "module",
