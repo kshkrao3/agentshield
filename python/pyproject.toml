@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "apexguard"
 version = "0.1.1"
 description = "Runtime security middleware for LLM agents — prompt injection, tool misuse, and memory poisoning defense"
-readme = "../../README.md"
+readme = "README.md"
 license = {text = "Apache-2.0"}
 requires-python = ">=3.10"
 keywords = ["llm", "security", "agent", "prompt-injection", "ai-safety"]
