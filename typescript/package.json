@@ -16,7 +16,7 @@
       "types": "./dist/adapters/vercel-ai.d.ts"
     }
   },
-  "files": ["dist"],
+  "files": ["dist", "README.md"],
   "scripts": {
     "build": "tsc",
     "test": "node --experimental-vm-modules node_modules/.bin/jest",
