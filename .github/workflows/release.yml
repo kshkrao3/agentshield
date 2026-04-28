@@ -21,6 +21,7 @@ jobs:
           python-version: "3.12"
       - name: Build
         run: |
+          cp README.md python/README.md
           cd python
           VERSION=${GITHUB_REF#refs/tags/v}
           sed -i "s/^version = .*/version = \"$VERSION\"/" pyproject.toml
