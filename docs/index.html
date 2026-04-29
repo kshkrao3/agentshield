@@ -42,6 +42,16 @@
       pointer-events: none;
     }
     #snackbar.show { opacity: 1; bottom: 2rem; }
+    #scroll-top {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease, transform 0.25s ease;
+      transform: translateY(8px);
+    }
+    #scroll-top.visible { opacity: 1; pointer-events: auto; transform: translateY(0); }
   </style>
 </head>
 <body class="text-gray-100 antialiased">
@@ -51,6 +61,13 @@
     <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
     Copied to clipboard
   </div>
+
+  <!-- Scroll to top -->
+  <button id="scroll-top" onclick="window.scrollTo({top:0,behavior:'smooth'})"
+    class="z-[99] w-10 h-10 rounded-full bg-dark-700 border border-white/10 hover:border-brand-500/40 hover:bg-dark-600 text-gray-400 hover:text-brand-500 flex items-center justify-center shadow-lg transition-colors"
+    aria-label="Scroll to top">
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/></svg>
+  </button>
 
   <!-- Nav -->
   <nav class="fixed top-0 w-full z-50 border-b border-white/5 bg-dark-900/80 backdrop-blur-md">
@@ -389,6 +406,12 @@ s.memory.<span class="text-yellow-300">write</span>(<span class="text-green-400"
       document.execCommand('copy');
       document.body.removeChild(ta);
     }
+
+    // Scroll to top button
+    const scrollBtn = document.getElementById('scroll-top');
+    window.addEventListener('scroll', () => {
+      scrollBtn.classList.toggle('visible', window.scrollY > 300);
+    }, { passive: true });
 
     // Mobile menu toggle
     const menuBtn = document.getElementById('menu-btn');
