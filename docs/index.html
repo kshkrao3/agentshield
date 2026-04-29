@@ -34,29 +34,65 @@
     pre { scrollbar-width:thin; scrollbar-color:#22c55e #0f1a14; }
 
     /* ── Light mode overrides — map Tailwind dark classes ── */
-    html.light body                          { background:#f4f9f6; color:#0f2818; }
+    html.light body                           { background:#f4f9f6; color:#0f2818; }
+
+    /* Backgrounds */
     html.light .bg-dark-900,
-    html.light .bg-dark-900\/80             { background:#f4f9f6 !important; }
-    html.light .bg-dark-800                  { background:#ffffff !important; }
+    html.light .bg-dark-900\/80              { background:#f4f9f6 !important; }
+    html.light .bg-dark-800                   { background:#ffffff !important; }
     html.light .bg-dark-700,
-    html.light .bg-dark-700\/50             { background:#edf7f1 !important; }
-    html.light .bg-dark-600                  { background:#e2f2e9 !important; }
-    html.light .text-gray-100               { color:#0f2818 !important; }
-    html.light .text-gray-400               { color:#4b6358 !important; }
-    html.light .text-gray-500               { color:#6b8a7a !important; }
-    html.light .text-gray-600               { color:#7a9a8a !important; }
-    html.light .border-white\/10            { border-color:rgba(0,0,0,0.09) !important; }
-    html.light .border-white\/5             { border-color:rgba(0,0,0,0.06) !important; }
-    html.light .bg-white\/10               { background:rgba(0,0,0,0.06) !important; }
-    html.light .hover\:bg-white\/15:hover   { background:rgba(0,0,0,0.1) !important; }
-    html.light .bg-black\/30               { background:rgba(0,0,0,0.04) !important; }
-    html.light .bg-brand-500\/5            { background:rgba(22,163,74,0.07) !important; }
-    html.light .bg-brand-500\/10           { background:rgba(22,163,74,0.1) !important; }
-    html.light .border-brand-500\/20       { border-color:rgba(22,163,74,0.25) !important; }
-    html.light .border-brand-500\/30       { border-color:rgba(22,163,74,0.35) !important; }
-    html.light pre                          { scrollbar-color:#16a34a #ffffff; }
-    html.light .shadow-xl                   { box-shadow:0 8px 24px rgba(0,0,0,0.12); }
-    html.light #snackbar                    { background:#ffffff !important; }
+    html.light .bg-dark-700\/50              { background:#edf7f1 !important; }
+    html.light .bg-dark-600                   { background:#e2f2e9 !important; }
+    html.light .bg-dark-900\/95              { background:rgba(244,249,246,0.97) !important; }
+
+    /* Text — including white which shows on hero/headings/buttons */
+    html.light .text-white                    { color:#0f2818 !important; }
+    html.light .text-gray-100                { color:#0f2818 !important; }
+    html.light .text-gray-400                { color:#4b6358 !important; }
+    html.light .text-gray-500                { color:#6b8a7a !important; }
+    html.light .text-gray-600                { color:#7a9a8a !important; }
+
+    /* Borders */
+    html.light .border-white\/10             { border-color:rgba(0,0,0,0.1) !important; }
+    html.light .border-white\/5              { border-color:rgba(0,0,0,0.07) !important; }
+
+    /* Buttons — bg-white/10 is near-invisible on light bg; use a visible tint */
+    html.light .bg-white\/10                 { background:rgba(0,0,0,0.07) !important; }
+    html.light .hover\:bg-white\/15:hover    { background:rgba(0,0,0,0.12) !important; }
+    html.light .hover\:bg-dark-600:hover     { background:#d6eedd !important; }
+
+    /* Code / pre blocks */
+    html.light .bg-black\/30                 { background:rgba(0,0,0,0.05) !important; }
+    html.light pre                            { scrollbar-color:#16a34a #ffffff; color:#1a3a28; }
+    html.light code                           { color:#1a3a28; }
+
+    /* Brand tints */
+    html.light .bg-brand-500\/5             { background:rgba(22,163,74,0.07) !important; }
+    html.light .bg-brand-500\/10            { background:rgba(22,163,74,0.12) !important; }
+    html.light .border-brand-500\/20        { border-color:rgba(22,163,74,0.3) !important; }
+    html.light .border-brand-500\/30        { border-color:rgba(22,163,74,0.4) !important; }
+
+    /* Blue tints (TS badges) */
+    html.light .text-blue-400               { color:#1d6fa0 !important; }
+    html.light .bg-blue-400\/10             { background:rgba(29,111,160,0.1) !important; }
+
+    /* Syntax highlight colors — keep readable on light bg */
+    html.light .text-purple-400             { color:#7c3aed !important; }
+    html.light .text-blue-300              { color:#1d5fa0 !important; }
+    html.light .text-yellow-300            { color:#b45309 !important; }
+    html.light .text-orange-400            { color:#c2410c !important; }
+    html.light .text-green-400             { color:#15803d !important; }
+
+    /* Terminal colours in demo block */
+    html.light .text-cyan-400              { color:#0e7490 !important; }
+    html.light .text-red-400               { color:#dc2626 !important; }
+    html.light .text-yellow-400            { color:#d97706 !important; }
+
+    /* Misc */
+    html.light .shadow-xl                    { box-shadow:0 8px 24px rgba(0,0,0,0.1); }
+    html.light .shadow-lg                    { box-shadow:0 4px 16px rgba(0,0,0,0.08); }
+    html.light #snackbar                     { background:#ffffff !important; }
+    html.light #scroll-top                   { background:#ffffff !important; border-color:rgba(0,0,0,0.1) !important; }
 
     /* ── Snackbar ─────────────────────────────────── */
     #snackbar {
