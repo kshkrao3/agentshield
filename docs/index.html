@@ -31,9 +31,20 @@
     @keyframes fadeIn { to { opacity: 1; } }
     .copy-btn:active { transform: scale(0.95); }
     pre { scrollbar-width: thin; scrollbar-color: #22c55e #0f1a14; }
+    .copy-icon { transition: color 0.15s, transform 0.15s; }
+    .copy-icon:active { transform: scale(0.88); }
+    #snackbar { transition: opacity 0.25s ease, transform 0.25s ease; }
+    #snackbar.show { opacity: 1; transform: translateY(0); }
+    #snackbar.hide { opacity: 0; transform: translateY(12px); }
   </style>
 </head>
 <body class="text-gray-100 antialiased">
+
+  <!-- Snackbar -->
+  <div id="snackbar" class="hide fixed bottom-6 left-1/2 -translate-x-1/2 z-[100] flex items-center gap-2 bg-dark-700 border border-brand-500/30 text-brand-500 text-sm font-medium px-4 py-2.5 rounded-xl shadow-xl pointer-events-none">
+    <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+    Copied to clipboard
+  </div>
 
   <!-- Nav -->
   <nav class="fixed top-0 w-full z-50 border-b border-white/5 bg-dark-900/80 backdrop-blur-md">
@@ -194,11 +205,15 @@
         <div class="grid sm:grid-cols-2 gap-3">
           <div class="rounded-xl border border-white/10 bg-dark-800 p-4 flex items-center justify-between group">
             <code class="font-mono text-sm text-brand-500">pip install apexguard</code>
-            <button onclick="copy(this,'pip install apexguard')" class="copy-btn text-gray-500 hover:text-white transition-colors text-xs">copy</button>
+            <button onclick="copy('pip install apexguard')" class="copy-icon text-gray-500 hover:text-brand-500 p-1" aria-label="Copy">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" stroke-width="2" stroke-linejoin="round"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" stroke-width="2" stroke-linejoin="round"/></svg>
+            </button>
           </div>
           <div class="rounded-xl border border-white/10 bg-dark-800 p-4 flex items-center justify-between group">
             <code class="font-mono text-sm text-brand-500">npm install @apexguard/sdk</code>
-            <button onclick="copy(this,'npm install @apexguard/sdk')" class="copy-btn text-gray-500 hover:text-white transition-colors text-xs">copy</button>
+            <button onclick="copy('npm install @apexguard/sdk')" class="copy-icon text-gray-500 hover:text-brand-500 p-1" aria-label="Copy">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" stroke-width="2" stroke-linejoin="round"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" stroke-width="2" stroke-linejoin="round"/></svg>
+            </button>
           </div>
         </div>
       </div>
@@ -209,7 +224,9 @@
         <div class="rounded-xl border border-white/10 bg-dark-800 overflow-hidden">
           <div class="flex items-center justify-between px-4 py-2 border-b border-white/5">
             <span class="text-xs font-mono text-gray-500">main.py</span>
-            <button onclick="copy(this, document.getElementById('py-code').textContent)" class="copy-btn text-gray-500 hover:text-white transition-colors text-xs">copy</button>
+            <button onclick="copy(document.getElementById('py-code').textContent)" class="copy-icon text-gray-500 hover:text-brand-500 p-1" aria-label="Copy">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" stroke-width="2" stroke-linejoin="round"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" stroke-width="2" stroke-linejoin="round"/></svg>
+            </button>
           </div>
           <pre id="py-code" class="p-4 text-sm font-mono overflow-x-auto leading-6"><span class="text-purple-400">from</span> <span class="text-blue-300">agentshield</span> <span class="text-purple-400">import</span> Shield
 <span class="text-purple-400">from</span> <span class="text-blue-300">agentshield.policy</span> <span class="text-purple-400">import</span> Policy
@@ -238,7 +255,9 @@ shield.memory.<span class="text-yellow-300">write</span>(<span class="text-green
         <div class="rounded-xl border border-white/10 bg-dark-800 overflow-hidden">
           <div class="flex items-center justify-between px-4 py-2 border-b border-white/5">
             <span class="text-xs font-mono text-gray-500">main.ts</span>
-            <button onclick="copy(this, document.getElementById('ts-code').textContent)" class="copy-btn text-gray-500 hover:text-white transition-colors text-xs">copy</button>
+            <button onclick="copy(document.getElementById('ts-code').textContent)" class="copy-icon text-gray-500 hover:text-brand-500 p-1" aria-label="Copy">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" stroke-width="2" stroke-linejoin="round"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" stroke-width="2" stroke-linejoin="round"/></svg>
+            </button>
           </div>
           <pre id="ts-code" class="p-4 text-sm font-mono overflow-x-auto leading-6"><span class="text-purple-400">import</span> { shield } <span class="text-purple-400">from</span> <span class="text-green-400">"@apexguard/sdk"</span>;
 
@@ -337,12 +356,17 @@ s.memory.<span class="text-yellow-300">write</span>(<span class="text-green-400"
   </footer>
 
   <script>
-    function copy(btn, text) {
+    let snackTimer;
+    function copy(text) {
       navigator.clipboard.writeText(text.trim()).then(() => {
-        const orig = btn.textContent;
-        btn.textContent = 'copied!';
-        btn.style.color = '#22c55e';
-        setTimeout(() => { btn.textContent = orig; btn.style.color = ''; }, 1500);
+        const sb = document.getElementById('snackbar');
+        sb.classList.remove('hide');
+        sb.classList.add('show');
+        clearTimeout(snackTimer);
+        snackTimer = setTimeout(() => {
+          sb.classList.remove('show');
+          sb.classList.add('hide');
+        }, 2000);
       });
     }
 
