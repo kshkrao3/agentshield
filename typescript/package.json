@@ -14,6 +14,10 @@
     "./adapters/vercel-ai": {
       "import": "./dist/adapters/vercel-ai.js",
       "types": "./dist/adapters/vercel-ai.d.ts"
+    },
+    "./adapters/openai-agents": {
+      "import": "./dist/adapters/openai-agents.js",
+      "types": "./dist/adapters/openai-agents.d.ts"
     }
   },
   "files": ["dist", "README.md"],
