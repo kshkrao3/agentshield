@@ -9,6 +9,7 @@
   <meta property="og:description" content="Block prompt injection, tool misuse, and memory poisoning. Zero dependencies. Works with LangChain, LlamaIndex, OpenAI Agents SDK." />
   <meta property="og:type" content="website" />
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
   <script>
     tailwind.config = {
       theme: {
@@ -111,6 +112,46 @@
       transform:translateY(8px);
     }
     #scroll-top.visible { opacity:1; pointer-events:auto; transform:translateY(0); }
+
+    /* ── Hero Three.js canvas (contained, right column) ── */
+    #hero-canvas-wrap { border-radius: 1.25rem; overflow: hidden; }
+    #shield-canvas    { display: block; width: 100%; height: 100%; }
+
+    /* ── Decorative SVG animations ────────────────── */
+    .anim-dot-svg {
+      animation: dotBlink 3s ease-in-out infinite;
+    }
+    .anim-dot-svg:nth-child(2n) { animation-delay: 0.8s; }
+    .anim-dot-svg:nth-child(3n) { animation-delay: 1.6s; }
+    @keyframes dotBlink {
+      0%, 100% { opacity: 0.2; }
+      50%       { opacity: 0.85; }
+    }
+    .anim-line {
+      stroke-dasharray: 5 10;
+      animation: lineDash 4s linear infinite;
+      opacity: 0.35;
+    }
+    .anim-line:nth-child(2n) { animation-delay: 0.7s; }
+    .anim-line:nth-child(3n) { animation-delay: 1.4s; }
+    @keyframes lineDash { to { stroke-dashoffset: -60; } }
+
+    .anim-circuit {
+      stroke-dasharray: 8 14;
+      animation: circuitDash 5s linear infinite;
+      opacity: 0.22;
+    }
+    .anim-circuit:nth-child(2n) { animation-direction: reverse; animation-delay: 1s; }
+    .anim-circuit:nth-child(3n) { animation-delay: 2.2s; }
+    @keyframes circuitDash { to { stroke-dashoffset: -88; } }
+
+    .anim-orb {
+      animation: orbBreath 6s ease-in-out infinite;
+    }
+    @keyframes orbBreath {
+      0%, 100% { transform: scale(1);    opacity: 0.45; }
+      50%       { transform: scale(1.22); opacity: 0.9; }
+    }
   </style>
 </head>
 <body class="text-gray-100 antialiased">
@@ -182,32 +223,42 @@
   </nav>
 
   <!-- Hero -->
-  <section class="pt-32 pb-20 px-6">
-    <div class="max-w-4xl mx-auto text-center">
-      <div class="inline-flex items-center gap-2 text-xs font-mono text-brand-500 bg-brand-500/10 border border-brand-500/20 px-3 py-1.5 rounded-full mb-8">
-        <span class="w-1.5 h-1.5 rounded-full bg-brand-500 animate-pulse"></span>
-        Open source · Zero dependencies · ~0.1ms per check
+  <section class="relative pt-28 pb-20 px-6">
+    <div class="max-w-6xl mx-auto flex flex-col lg:flex-row items-center gap-10 lg:gap-16">
+
+      <!-- Left: content -->
+      <div class="flex-1 min-w-0 text-center lg:text-left">
+        <div class="inline-flex items-center gap-2 text-xs font-mono text-brand-500 bg-brand-500/10 border border-brand-500/20 px-3 py-1.5 rounded-full mb-8">
+          <span class="w-1.5 h-1.5 rounded-full bg-brand-500 animate-pulse"></span>
+          Open source · Zero dependencies · ~0.1ms per check
+        </div>
+        <h1 class="text-5xl sm:text-6xl font-extrabold tracking-tight text-white leading-tight mb-6">
+          Runtime security<br />
+          <span class="text-brand-500">for LLM agents</span>
+        </h1>
+        <p class="text-xl text-gray-400 max-w-2xl mx-auto lg:mx-0 mb-10 leading-relaxed">
+          Middleware that blocks <strong class="text-white">prompt injection</strong>,
+          <strong class="text-white">tool misuse</strong>, and
+          <strong class="text-white">memory poisoning</strong> before they reach your agent.
+          Drop-in for LangChain, LlamaIndex, and OpenAI Agents SDK.
+        </p>
+        <div class="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start">
+          <a href="#quickstart"
+             class="px-6 py-3 bg-brand-500 hover:bg-brand-600 text-white font-semibold rounded-xl transition-colors">
+            Get started →
+          </a>
+          <a href="https://github.com/kshkrao3/agentshield" target="_blank"
+             class="px-6 py-3 bg-white/10 hover:bg-white/15 text-white font-semibold rounded-xl transition-colors">
+            View on GitHub
+          </a>
+        </div>
       </div>
-      <h1 class="text-5xl sm:text-6xl font-extrabold tracking-tight text-white leading-tight mb-6">
-        Runtime security<br />
-        <span class="text-brand-500">for LLM agents</span>
-      </h1>
-      <p class="text-xl text-gray-400 max-w-2xl mx-auto mb-10 leading-relaxed">
-        Middleware that blocks <strong class="text-white">prompt injection</strong>,
-        <strong class="text-white">tool misuse</strong>, and
-        <strong class="text-white">memory poisoning</strong> before they reach your agent.
-        Drop-in for LangChain, LlamaIndex, and OpenAI Agents SDK.
-      </p>
-      <div class="flex flex-col sm:flex-row gap-3 justify-center">
-        <a href="#quickstart"
-           class="px-6 py-3 bg-brand-500 hover:bg-brand-600 text-white font-semibold rounded-xl transition-colors">
-          Get started →
-        </a>
-        <a href="https://github.com/kshkrao3/agentshield" target="_blank"
-           class="px-6 py-3 bg-white/10 hover:bg-white/15 text-white font-semibold rounded-xl transition-colors">
-          View on GitHub
-        </a>
+
+      <!-- Right: Three.js animation — desktop only -->
+      <div id="hero-canvas-wrap" class="hidden lg:block flex-shrink-0 w-[460px] h-[460px]" aria-hidden="true">
+        <canvas id="shield-canvas" class="w-full h-full"></canvas>
       </div>
+
     </div>
   </section>
 
@@ -254,7 +305,28 @@
   </section>
 
   <!-- Features -->
-  <section id="features" class="py-20 px-6 border-t border-white/5">
+  <section id="features" class="py-20 px-6 border-t border-white/5 relative overflow-hidden">
+    <!-- Decorative network — desktop only -->
+    <div class="hidden lg:block absolute right-0 inset-y-0 w-72 pointer-events-none" aria-hidden="true">
+      <svg class="w-full h-full" viewBox="0 0 288 640" preserveAspectRatio="xMidYMid slice" fill="none">
+        <circle cx="60"  cy="90"  r="3.5" fill="#22c55e" class="anim-dot-svg"/>
+        <circle cx="210" cy="60"  r="3"   fill="#22c55e" class="anim-dot-svg"/>
+        <circle cx="140" cy="200" r="3.5" fill="#22c55e" class="anim-dot-svg"/>
+        <circle cx="255" cy="290" r="3"   fill="#22c55e" class="anim-dot-svg"/>
+        <circle cx="75"  cy="380" r="3.5" fill="#22c55e" class="anim-dot-svg"/>
+        <circle cx="190" cy="460" r="3"   fill="#22c55e" class="anim-dot-svg"/>
+        <circle cx="50"  cy="555" r="3.5" fill="#22c55e" class="anim-dot-svg"/>
+        <circle cx="230" cy="600" r="3"   fill="#22c55e" class="anim-dot-svg"/>
+        <line x1="60"  y1="90"  x2="210" y2="60"  stroke="#22c55e" stroke-width="1" class="anim-line"/>
+        <line x1="210" y1="60"  x2="140" y2="200" stroke="#22c55e" stroke-width="1" class="anim-line"/>
+        <line x1="140" y1="200" x2="255" y2="290" stroke="#22c55e" stroke-width="1" class="anim-line"/>
+        <line x1="255" y1="290" x2="75"  y2="380" stroke="#22c55e" stroke-width="1" class="anim-line"/>
+        <line x1="75"  y1="380" x2="190" y2="460" stroke="#22c55e" stroke-width="1" class="anim-line"/>
+        <line x1="190" y1="460" x2="50"  y2="555" stroke="#22c55e" stroke-width="1" class="anim-line"/>
+        <line x1="50"  y1="555" x2="230" y2="600" stroke="#22c55e" stroke-width="1" class="anim-line"/>
+      </svg>
+    </div>
+
     <div class="max-w-6xl mx-auto">
       <h2 class="text-3xl font-bold text-center mb-4">Three layers of defense</h2>
       <p class="text-gray-400 text-center mb-16 max-w-xl mx-auto">Each module runs independently or together via the <code class="font-mono text-brand-500">Shield</code> orchestrator.</p>
@@ -376,7 +448,24 @@ s.memory.<span class="text-yellow-300">write</span>(<span class="text-green-400"
   </section>
 
   <!-- Adapters -->
-  <section id="adapters" class="py-20 px-6 border-t border-white/5">
+  <section id="adapters" class="py-20 px-6 border-t border-white/5 relative overflow-hidden">
+    <!-- Decorative circuit lines — desktop only, left edge -->
+    <div class="hidden lg:block absolute left-0 inset-y-0 w-64 pointer-events-none" aria-hidden="true">
+      <svg class="w-full h-full" viewBox="0 0 256 560" preserveAspectRatio="xMidYMid slice" fill="none">
+        <line x1="0"   y1="100" x2="256" y2="100" stroke="#22c55e" stroke-width="1" class="anim-circuit"/>
+        <line x1="0"   y1="220" x2="256" y2="220" stroke="#22c55e" stroke-width="1" class="anim-circuit"/>
+        <line x1="0"   y1="340" x2="256" y2="340" stroke="#22c55e" stroke-width="1" class="anim-circuit"/>
+        <line x1="0"   y1="460" x2="256" y2="460" stroke="#22c55e" stroke-width="1" class="anim-circuit"/>
+        <line x1="64"  y1="100" x2="64"  y2="220" stroke="#22c55e" stroke-width="1" class="anim-circuit"/>
+        <line x1="192" y1="220" x2="192" y2="340" stroke="#22c55e" stroke-width="1" class="anim-circuit"/>
+        <line x1="96"  y1="340" x2="96"  y2="460" stroke="#22c55e" stroke-width="1" class="anim-circuit"/>
+        <circle cx="64"  cy="100" r="3.5" fill="#22c55e" class="anim-dot-svg"/>
+        <circle cx="192" cy="220" r="3.5" fill="#22c55e" class="anim-dot-svg"/>
+        <circle cx="96"  cy="340" r="3.5" fill="#22c55e" class="anim-dot-svg"/>
+        <circle cx="64"  cy="460" r="3.5" fill="#22c55e" class="anim-dot-svg"/>
+      </svg>
+    </div>
+
     <div class="max-w-4xl mx-auto">
       <h2 class="text-3xl font-bold text-center mb-4">Works with your stack</h2>
       <p class="text-gray-400 text-center mb-12">Drop-in adapters — no SDK changes required.</p>
@@ -426,8 +515,13 @@ s.memory.<span class="text-yellow-300">write</span>(<span class="text-green-400"
   </section>
 
   <!-- CTA -->
-  <section class="py-20 px-6 border-t border-white/5">
-    <div class="max-w-2xl mx-auto text-center">
+  <section class="py-20 px-6 border-t border-white/5 relative overflow-hidden">
+    <!-- Decorative orbs — desktop only -->
+    <div class="hidden lg:block absolute left-12 top-[calc(50%-9rem)] w-72 h-72 rounded-full anim-orb pointer-events-none" aria-hidden="true"
+         style="background:radial-gradient(circle, rgba(34,197,94,0.10), transparent 70%)"></div>
+    <div class="hidden lg:block absolute right-16 top-[calc(50%-6rem)] w-48 h-48 rounded-full anim-orb pointer-events-none" aria-hidden="true"
+         style="background:radial-gradient(circle, rgba(34,197,94,0.07), transparent 70%); animation-delay:3s"></div>
+    <div class="max-w-2xl mx-auto text-center relative">
       <h2 class="text-3xl font-bold mb-4">Start protecting your agents today</h2>
       <p class="text-gray-400 mb-8">MIT licensed. Zero dependencies. Single-file install.</p>
       <div class="flex flex-col sm:flex-row gap-3 justify-center">
@@ -527,6 +621,236 @@ s.memory.<span class="text-yellow-300">write</span>(<span class="text-green-400"
         document.querySelector(a.getAttribute('href'))?.scrollIntoView({ behavior: 'smooth' });
       });
     });
+
+    // ── Three.js Shield Animation (hero right column, desktop only) ───────
+    (function () {
+      // Skip entirely on mobile — canvas is display:none
+      if (!window.matchMedia('(min-width: 1024px)').matches) return;
+
+      const canvas = document.getElementById('shield-canvas');
+      if (!canvas || typeof THREE === 'undefined') return;
+
+      const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(62, 1, 0.1, 100);
+      camera.position.set(0, 1.5, 7);
+      camera.lookAt(0, 0, 0);
+
+      // ── Helpers ──────────────────────────────────────────────────────────
+      const BRAND   = 0x22c55e;
+      const BRAND_D = 0x16a34a;
+      const RED     = 0xef4444;
+      const YELLOW  = 0xfbbf24;
+
+      function resize() {
+        const wrap = document.getElementById('hero-canvas-wrap');
+        if (!wrap) return;
+        const w = wrap.clientWidth;
+        const h = wrap.clientHeight;
+        renderer.setSize(w, h, false);
+        camera.aspect = w / h;
+        camera.updateProjectionMatrix();
+      }
+      resize();
+      window.addEventListener('resize', resize);
+
+      // ── Central shield sphere (wireframe) ────────────────────────────────
+      const shieldMat = new THREE.MeshBasicMaterial({ color: BRAND, wireframe: true, transparent: true, opacity: 0.22 });
+      const shield = new THREE.Mesh(new THREE.IcosahedronGeometry(1.0, 2), shieldMat);
+      scene.add(shield);
+
+      // Inner glow sphere
+      const innerMat = new THREE.MeshBasicMaterial({ color: BRAND, transparent: true, opacity: 0.08 });
+      const inner = new THREE.Mesh(new THREE.SphereGeometry(0.72, 24, 24), innerMat);
+      scene.add(inner);
+
+      // Pulse ring (flat torus that scales out on hit)
+      const ringMat = new THREE.MeshBasicMaterial({ color: BRAND, transparent: true, opacity: 0, side: THREE.DoubleSide });
+      const ring = new THREE.Mesh(new THREE.TorusGeometry(1.0, 0.02, 8, 64), ringMat);
+      scene.add(ring);
+      let ringAnim = 0; // 0 = idle
+
+      // ── Agent nodes ───────────────────────────────────────────────────────
+      const NODE_COUNT = 8;
+      const nodeMat = new THREE.MeshBasicMaterial({ color: BRAND_D });
+      const nodes = [];
+      const orbits = [
+        { r: 2.4, tilt: 0.0,  speed: 0.0040 },
+        { r: 2.7, tilt: 0.5,  speed: 0.0030 },
+        { r: 2.2, tilt: -0.4, speed: 0.0055 },
+        { r: 3.0, tilt: 0.8,  speed: 0.0025 },
+        { r: 2.5, tilt: -0.7, speed: 0.0045 },
+        { r: 2.8, tilt: 0.3,  speed: 0.0035 },
+        { r: 2.3, tilt: -0.2, speed: 0.0050 },
+        { r: 2.6, tilt: 0.6,  speed: 0.0028 },
+      ];
+      for (let i = 0; i < NODE_COUNT; i++) {
+        const mesh = new THREE.Mesh(new THREE.SphereGeometry(0.09, 10, 10), nodeMat.clone());
+        mesh.userData = { ...orbits[i], angle: (i / NODE_COUNT) * Math.PI * 2 };
+        scene.add(mesh);
+        nodes.push(mesh);
+      }
+
+      // ── Connection lines ──────────────────────────────────────────────────
+      const MAX_LINES = 20;
+      const lineMat = new THREE.LineBasicMaterial({ color: BRAND, transparent: true, opacity: 0.12 });
+      const lineGeo = new THREE.BufferGeometry();
+      const linePos = new Float32Array(MAX_LINES * 6);
+      lineGeo.setAttribute('position', new THREE.BufferAttribute(linePos, 3));
+      const lineSegs = new THREE.LineSegments(lineGeo, lineMat);
+      scene.add(lineSegs);
+
+      function updateLines() {
+        let idx = 0;
+        const ZERO = new THREE.Vector3(0, 0, 0);
+        // node → centre
+        for (let i = 0; i < nodes.length && idx < MAX_LINES; i++) {
+          const p = nodes[i].position;
+          linePos.set([p.x, p.y, p.z, 0, 0, 0], idx * 6);
+          idx++;
+        }
+        // node → nearby node
+        for (let i = 0; i < nodes.length && idx < MAX_LINES; i++) {
+          for (let j = i + 1; j < nodes.length && idx < MAX_LINES; j++) {
+            if (nodes[i].position.distanceTo(nodes[j].position) < 2.6) {
+              const a = nodes[i].position, b = nodes[j].position;
+              linePos.set([a.x, a.y, a.z, b.x, b.y, b.z], idx * 6);
+              idx++;
+            }
+          }
+        }
+        // zero out unused
+        for (; idx < MAX_LINES; idx++) linePos.fill(0, idx * 6, idx * 6 + 6);
+        lineGeo.attributes.position.needsUpdate = true;
+        lineGeo.setDrawRange(0, idx * 2);
+      }
+
+      // ── Attack particles ──────────────────────────────────────────────────
+      const attacks = [];
+
+      function spawnAttack() {
+        const geo = new THREE.SphereGeometry(0.07, 8, 8);
+        const mat = new THREE.MeshBasicMaterial({ color: RED, transparent: true, opacity: 1 });
+        const mesh = new THREE.Mesh(geo, mat);
+        const theta = Math.random() * Math.PI * 2;
+        const phi = Math.acos(2 * Math.random() - 1);
+        const r = 6;
+        mesh.position.set(
+          r * Math.sin(phi) * Math.cos(theta),
+          r * Math.sin(phi) * Math.sin(theta) * 0.5,
+          r * Math.cos(phi)
+        );
+        const dir = mesh.position.clone().normalize().negate();
+        mesh.userData = { dir, blocked: false, life: 1.0, deflect: null };
+        scene.add(mesh);
+        attacks.push(mesh);
+      }
+
+      // Stagger initial spawns
+      setTimeout(() => { spawnAttack(); setInterval(spawnAttack, 2200); }, 600);
+
+      // ── Floating particles background ─────────────────────────────────────
+      const PART_COUNT = 120;
+      const partGeo = new THREE.BufferGeometry();
+      const partPos = new Float32Array(PART_COUNT * 3);
+      for (let i = 0; i < PART_COUNT; i++) {
+        partPos[i * 3]     = (Math.random() - 0.5) * 10;
+        partPos[i * 3 + 1] = (Math.random() - 0.5) * 10;
+        partPos[i * 3 + 2] = (Math.random() - 0.5) * 6 - 1;
+      }
+      partGeo.setAttribute('position', new THREE.BufferAttribute(partPos, 3));
+      const partMat = new THREE.PointsMaterial({ color: BRAND, size: 0.04, transparent: true, opacity: 0.35 });
+      scene.add(new THREE.Points(partGeo, partMat));
+
+      // ── Animate ───────────────────────────────────────────────────────────
+      let t = 0;
+      function animate() {
+        requestAnimationFrame(animate);
+        t += 0.012;
+
+        // Rotate shield
+        shield.rotation.x += 0.0025;
+        shield.rotation.y += 0.004;
+        inner.rotation.y  -= 0.003;
+
+        // Slow camera drift
+        camera.position.x = Math.sin(t * 0.08) * 0.6;
+        camera.position.y = 1.5 + Math.cos(t * 0.06) * 0.3;
+        camera.lookAt(0, 0, 0);
+
+        // Orbit nodes
+        nodes.forEach(n => {
+          n.userData.angle += n.userData.speed;
+          const { angle, r, tilt } = n.userData;
+          n.position.set(
+            r * Math.cos(angle),
+            Math.sin(angle + tilt) * 0.8,
+            r * Math.sin(angle)
+          );
+        });
+
+        updateLines();
+
+        // Pulse ring animation
+        if (ringAnim > 0) {
+          ringAnim = Math.max(0, ringAnim - 0.035);
+          if (ringAnim === 0) {
+            ringMat.opacity = 0;
+            ring.scale.set(1, 1, 1);
+          } else {
+            const scale = 1 + (1 - ringAnim) * 2.5;
+            ring.scale.set(scale, scale, scale);
+            ringMat.opacity = ringAnim * 0.7;
+          }
+        }
+
+        // Shield glow decay
+        if (shieldMat.opacity > 0.22) shieldMat.opacity -= 0.008;
+
+        // Move attacks
+        for (let i = attacks.length - 1; i >= 0; i--) {
+          const atk = attacks[i];
+          if (!atk.userData.blocked) {
+            atk.position.addScaledVector(atk.userData.dir, 0.07);
+            if (atk.position.length() < 1.05) {
+              // Hit shield
+              atk.userData.blocked = true;
+              atk.material.color.setHex(YELLOW);
+              const deflect = new THREE.Vector3(
+                atk.userData.dir.x + (Math.random() - 0.5) * 1.5,
+                atk.userData.dir.y + (Math.random() - 0.5) * 1.5,
+                atk.userData.dir.z + (Math.random() - 0.5) * 1.5,
+              ).normalize().negate();
+              atk.userData.deflect = deflect;
+              // Trigger shield pulse
+              shieldMat.opacity = 0.65;
+              ringAnim = 1.0;
+            }
+          } else {
+            atk.position.addScaledVector(atk.userData.deflect, 0.06);
+            atk.userData.life -= 0.028;
+            atk.material.opacity = atk.userData.life;
+            if (atk.userData.life <= 0) {
+              scene.remove(atk);
+              atk.geometry.dispose();
+              atk.material.dispose();
+              attacks.splice(i, 1);
+            }
+          }
+        }
+
+        // Adapt colours to theme
+        const isLight = document.documentElement.classList.contains('light');
+        partMat.opacity = isLight ? 0.18 : 0.35;
+        lineMat.opacity = isLight ? 0.20 : 0.12;
+        innerMat.opacity = isLight ? 0.05 : 0.08;
+
+        renderer.render(scene, camera);
+      }
+      animate();
+    })();
   </script>
 </body>
 </html>
