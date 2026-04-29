@@ -5,3 +5,4 @@ export { MemoryGuard } from "./memory-guard.js";
 export { AuditEmitter } from "./audit.js";
 export type { Policy, ViolationMode, Sensitivity } from "./policy.js";
 export type { ViolationEvent, ViolationType, Severity } from "./audit.js";
+export type { OpenAIAgentTool } from "./adapters/openai-agents.js";

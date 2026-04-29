@@ -27,6 +27,14 @@ _INJECTION_PATTERNS_MEDIUM = _INJECTION_PATTERNS_LOW + [
     r"<\s*/?system\s*>",
     r"\[system\]",
     r"{{.*}}",  # template injection attempts
+    # Indirect injection via tool/RAG responses
+    r"(assistant|ai|model)\s+has\s+been\s+(updated|reprogrammed|reconfigured)",
+    r"maintenance\s+mode",
+    r"safe\s+mode\s+(disabled|off)",
+    # Role escape attempts
+    r"you\s+(have\s+no|don'?t\s+have)\s+(restrictions?|limits?|rules?|guidelines?)",
+    r"without\s+(any\s+)?(restrictions?|limits?|filters?|guidelines?|rules?)",
+    r"unrestricted\s+(mode|access|output)",
 ]
 
 _INJECTION_PATTERNS_HIGH = _INJECTION_PATTERNS_MEDIUM + [
@@ -38,12 +46,26 @@ _INJECTION_PATTERNS_HIGH = _INJECTION_PATTERNS_MEDIUM + [
     r"translate\s+(your\s+)?(instructions?|system\s+prompt)",
     r"escape\s+sequence",
     r"prompt\s+leak",
+    # Encoding / obfuscation bypass attempts
+    r"base64\s*(decode|encoded)",
+    r"rot13",
+    r"hex\s*decode",
+    # Multi-turn context manipulation
+    r"for\s+(the\s+)?rest\s+of\s+(this\s+)?(conversation|session|chat)",
+    r"from\s+(now|this\s+point)\s+on\s+(you|ignore|forget|act)",
+    # Prompt exfiltration
+    r"(send|email|post|output|print|write)\s+(your\s+)?(system\s+prompt|instructions?)\s+(to|at|as)",
+    r"extract\s+(your\s+)?(system\s+prompt|instructions?|context|rules?)",
+    # ASCII/unicode smuggling markers
+    r"[​‌‍⁠﻿]",  # zero-width characters
+    r"<!--.*?-->",  # HTML comment injection
+    r"\/\*.*?\*\/",  # comment injection
 ]
 
 _PATTERN_MAP = {
     "low": [re.compile(p, re.IGNORECASE) for p in _INJECTION_PATTERNS_LOW],
-    "medium": [re.compile(p, re.IGNORECASE) for p in _INJECTION_PATTERNS_MEDIUM],
-    "high": [re.compile(p, re.IGNORECASE) for p in _INJECTION_PATTERNS_HIGH],
+    "medium": [re.compile(p, re.IGNORECASE | re.DOTALL) for p in _INJECTION_PATTERNS_MEDIUM],
+    "high": [re.compile(p, re.IGNORECASE | re.DOTALL) for p in _INJECTION_PATTERNS_HIGH],
 }
 
 
