@@ -39,7 +39,9 @@
   <nav class="fixed top-0 w-full z-50 border-b border-white/5 bg-dark-900/80 backdrop-blur-md">
     <div class="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between">
       <span class="font-mono font-bold text-brand-500 tracking-tight">AgentShield</span>
-      <div class="flex items-center gap-6 text-sm text-gray-400">
+
+      <!-- Desktop menu -->
+      <div class="hidden sm:flex items-center gap-6 text-sm text-gray-400">
         <a href="#features" class="hover:text-white transition-colors">Features</a>
         <a href="#quickstart" class="hover:text-white transition-colors">Quickstart</a>
         <a href="#adapters" class="hover:text-white transition-colors">Adapters</a>
@@ -49,6 +51,24 @@
           GitHub
         </a>
       </div>
+
+      <!-- Mobile hamburger -->
+      <button id="menu-btn" class="sm:hidden text-gray-400 hover:text-white p-1" aria-label="Toggle menu">
+        <svg id="icon-open" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+        <svg id="icon-close" class="w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+    </div>
+
+    <!-- Mobile dropdown -->
+    <div id="mobile-menu" class="hidden sm:hidden border-t border-white/5 bg-dark-900/95 px-6 py-4 flex flex-col gap-4 text-sm text-gray-400">
+      <a href="#features" class="hover:text-white transition-colors" onclick="closeMobileMenu()">Features</a>
+      <a href="#quickstart" class="hover:text-white transition-colors" onclick="closeMobileMenu()">Quickstart</a>
+      <a href="#adapters" class="hover:text-white transition-colors" onclick="closeMobileMenu()">Adapters</a>
+      <a href="https://github.com/kshkrao3/agentshield" target="_blank"
+         class="flex items-center gap-1.5 text-white bg-white/10 hover:bg-white/15 px-3 py-2 rounded-lg transition-colors w-fit">
+        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.92.359.31.678.921.678 1.856 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/></svg>
+        GitHub
+      </a>
     </div>
   </nav>
 
@@ -326,10 +346,29 @@ s.memory.<span class="text-yellow-300">write</span>(<span class="text-green-400"
       });
     }
 
-    // Smooth scroll
+    // Mobile menu toggle
+    const menuBtn = document.getElementById('menu-btn');
+    const mobileMenu = document.getElementById('mobile-menu');
+    const iconOpen = document.getElementById('icon-open');
+    const iconClose = document.getElementById('icon-close');
+
+    menuBtn.addEventListener('click', () => {
+      const open = mobileMenu.classList.toggle('hidden');
+      iconOpen.classList.toggle('hidden', !open);
+      iconClose.classList.toggle('hidden', open);
+    });
+
+    function closeMobileMenu() {
+      mobileMenu.classList.add('hidden');
+      iconOpen.classList.remove('hidden');
+      iconClose.classList.add('hidden');
+    }
+
+    // Smooth scroll (close mobile menu on nav link click)
     document.querySelectorAll('a[href^="#"]').forEach(a => {
       a.addEventListener('click', e => {
         e.preventDefault();
+        closeMobileMenu();
         document.querySelector(a.getAttribute('href'))?.scrollIntoView({ behavior: 'smooth' });
       });
     });
