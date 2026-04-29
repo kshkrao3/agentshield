@@ -31,17 +31,23 @@
     @keyframes fadeIn { to { opacity: 1; } }
     .copy-btn:active { transform: scale(0.95); }
     pre { scrollbar-width: thin; scrollbar-color: #22c55e #0f1a14; }
-    .copy-icon { transition: color 0.15s, transform 0.15s; }
-    .copy-icon:active { transform: scale(0.88); }
-    #snackbar { transition: opacity 0.25s ease, transform 0.25s ease; }
-    #snackbar.show { opacity: 1; transform: translateY(0); }
-    #snackbar.hide { opacity: 0; transform: translateY(12px); }
+    .copy-icon { transition: color 0.15s; }
+    #snackbar {
+      position: fixed;
+      bottom: 1.5rem;
+      left: 50%;
+      transform: translateX(-50%) translateY(0);
+      transition: opacity 0.25s ease, bottom 0.25s ease;
+      opacity: 0;
+      pointer-events: none;
+    }
+    #snackbar.show { opacity: 1; bottom: 2rem; }
   </style>
 </head>
 <body class="text-gray-100 antialiased">
 
   <!-- Snackbar -->
-  <div id="snackbar" class="hide fixed bottom-6 left-1/2 -translate-x-1/2 z-[100] flex items-center gap-2 bg-dark-700 border border-brand-500/30 text-brand-500 text-sm font-medium px-4 py-2.5 rounded-xl shadow-xl pointer-events-none">
+  <div id="snackbar" class="z-[100] flex items-center gap-2 bg-dark-700 border border-brand-500/30 text-brand-500 text-sm font-medium px-4 py-2.5 rounded-xl shadow-xl whitespace-nowrap">
     <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
     Copied to clipboard
   </div>
@@ -357,17 +363,31 @@ s.memory.<span class="text-yellow-300">write</span>(<span class="text-green-400"
 
   <script>
     let snackTimer;
+    function showSnackbar() {
+      const sb = document.getElementById('snackbar');
+      sb.classList.add('show');
+      clearTimeout(snackTimer);
+      snackTimer = setTimeout(() => sb.classList.remove('show'), 2000);
+    }
+
     function copy(text) {
-      navigator.clipboard.writeText(text.trim()).then(() => {
-        const sb = document.getElementById('snackbar');
-        sb.classList.remove('hide');
-        sb.classList.add('show');
-        clearTimeout(snackTimer);
-        snackTimer = setTimeout(() => {
-          sb.classList.remove('show');
-          sb.classList.add('hide');
-        }, 2000);
-      });
+      const t = (typeof text === 'string' ? text : text).trim();
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(t).catch(() => fallbackCopy(t));
+      } else {
+        fallbackCopy(t);
+      }
+      showSnackbar();
+    }
+
+    function fallbackCopy(text) {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.cssText = 'position:fixed;opacity:0';
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
     }
 
     // Mobile menu toggle
