@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { formatDate } from "@/lib/utils";
+import { Copy, Trash2, Check } from "lucide-react";
 
 interface ApiKeySummary {
   id: string;
@@ -12,17 +13,12 @@ interface ApiKeySummary {
   lastUsedAt: string | null;
 }
 
-export function ApiKeyManager({
-  projectId,
-  keys,
-}: {
-  projectId: string;
-  keys: ApiKeySummary[];
-}) {
+export function ApiKeyManager({ projectId, keys }: { projectId: string; keys: ApiKeySummary[] }) {
   const router = useRouter();
   const [creating, setCreating] = useState(false);
   const [name, setName] = useState("");
   const [revealed, setRevealed] = useState<{ key: string; prefix: string } | null>(null);
+  const [copied, setCopied] = useState(false);
 
   async function handleCreate(e: React.FormEvent) {
     e.preventDefault();
@@ -46,65 +42,79 @@ export function ApiKeyManager({
     if (res.ok) router.refresh();
   }
 
+  async function handleCopy() {
+    if (!revealed) return;
+    await navigator.clipboard.writeText(revealed.key);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  }
+
   return (
-    <div className="space-y-3">
+    <div className="space-y-4">
       {revealed && (
-        <div className="rounded-lg border-2 border-amber-500 bg-amber-50 dark:bg-amber-950/20 p-4">
-          <p className="font-medium mb-2">Copy this key now — it won&apos;t be shown again.</p>
-          <code className="block w-full p-2 rounded bg-background font-mono text-xs break-all">
-            {revealed.key}
-          </code>
-          <button
-            onClick={() => setRevealed(null)}
-            className="mt-3 text-sm underline"
-          >
+        <div className="rounded-xl border-2 border-amber-300 bg-amber-50 p-4">
+          <p className="text-sm font-semibold text-amber-800 mb-2">
+            Copy this key now — it won&apos;t be shown again.
+          </p>
+          <div className="flex items-center gap-2">
+            <code className="flex-1 bg-white border border-amber-200 rounded-lg px-3 py-2 font-mono text-xs text-amber-900 break-all">
+              {revealed.key}
+            </code>
+            <button
+              onClick={handleCopy}
+              className="flex-shrink-0 p-2 rounded-lg bg-amber-100 hover:bg-amber-200 text-amber-700 transition-colors"
+              title="Copy"
+            >
+              {copied ? <Check size={15} /> : <Copy size={15} />}
+            </button>
+          </div>
+          <button onClick={() => setRevealed(null)} className="mt-3 text-xs text-amber-700 underline">
             I&apos;ve saved it
           </button>
         </div>
       )}
 
       {keys.length === 0 ? (
-        <p className="text-sm text-muted-foreground">No API keys yet.</p>
+        <p className="text-sm text-slate-400 py-2">No API keys yet. Create one below.</p>
       ) : (
-        <div className="rounded-lg border divide-y">
+        <div className="rounded-xl border border-slate-100 divide-y divide-slate-50 overflow-hidden">
           {keys.map((k) => (
-            <div key={k.id} className="px-4 py-3 flex items-center gap-4 text-sm">
-              <div className="flex-1">
-                <div className="font-medium">{k.name}</div>
-                <div className="text-xs text-muted-foreground font-mono">
-                  {k.prefix}…
-                </div>
+            <div key={k.id} className="px-4 py-3.5 flex items-center gap-4">
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-slate-800">{k.name}</p>
+                <p className="text-xs font-mono text-slate-400 mt-0.5">{k.prefix}••••••••</p>
               </div>
-              <div className="text-xs text-muted-foreground text-right">
-                <div>Created {formatDate(k.createdAt)}</div>
-                <div>{k.lastUsedAt ? `Last used ${formatDate(k.lastUsedAt)}` : "Never used"}</div>
+              <div className="text-xs text-slate-400 text-right flex-shrink-0">
+                <p>Created {formatDate(k.createdAt)}</p>
+                <p>{k.lastUsedAt ? `Used ${formatDate(k.lastUsedAt)}` : "Never used"}</p>
               </div>
               <button
                 onClick={() => handleRevoke(k.id)}
-                className="text-sm text-destructive hover:underline"
+                className="p-2 rounded-lg text-slate-300 hover:text-red-500 hover:bg-red-50 transition-colors"
+                title="Revoke key"
               >
-                Revoke
+                <Trash2 size={15} />
               </button>
             </div>
           ))}
         </div>
       )}
 
-      <form onSubmit={handleCreate} className="flex gap-2">
+      <form onSubmit={handleCreate} className="flex gap-2 pt-1">
         <input
           type="text"
           placeholder="Key name (e.g. production-server)"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          className="flex-1 h-9 px-3 rounded-md border bg-background text-sm"
+          className="flex-1 h-10 px-3 rounded-xl border border-slate-200 bg-slate-50 text-sm focus:outline-none focus:ring-2 focus:ring-green-400/50 focus:border-green-400"
           required
         />
         <button
           type="submit"
           disabled={creating || !name}
-          className="h-9 px-4 rounded-md bg-primary text-primary-foreground text-sm font-medium disabled:opacity-50"
+          className="h-10 px-5 rounded-xl bg-green-600 text-white text-sm font-medium hover:bg-green-700 disabled:opacity-50 transition-colors"
         >
-          {creating ? "Creating..." : "Create key"}
+          {creating ? "Creating…" : "Create key"}
         </button>
       </form>
     </div>

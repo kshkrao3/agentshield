@@ -5,6 +5,7 @@ import { getDb } from "@/lib/db";
 import { event, project } from "@/drizzle/schema";
 import { and, desc, eq } from "drizzle-orm";
 import { formatDate } from "@/lib/utils";
+import { GitBranch } from "lucide-react";
 
 export default async function EventDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const user = await requireUser();
@@ -22,7 +23,6 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
   if (!row) notFound();
   const e = row.event;
 
-  // Sibling events in same session for the trace view.
   const siblings = e.sessionId
     ? await db
         .select()
@@ -32,89 +32,117 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
         .limit(50)
     : [];
 
+  const severityStyles: Record<string, string> = {
+    high: "bg-red-50 text-red-700 border border-red-200",
+    medium: "bg-amber-50 text-amber-700 border border-amber-200",
+    low: "bg-blue-50 text-blue-700 border border-blue-200",
+  };
+
   return (
-    <div className="space-y-6">
+    <div className="px-8 py-8 space-y-6">
+      {/* Header */}
       <div>
-        <Link href="/dashboard/events" className="text-sm text-muted-foreground hover:text-foreground">
+        <Link href="/dashboard/events" className="text-sm text-slate-400 hover:text-slate-700 transition-colors">
           ← Events
         </Link>
-        <h1 className="text-2xl font-semibold mt-1">Event {e.id.slice(0, 8)}</h1>
+        <div className="flex items-center gap-3 mt-2">
+          <h1 className="text-2xl font-semibold text-slate-900">
+            Event <span className="font-mono text-xl text-slate-500">{e.id.slice(0, 8)}</span>
+          </h1>
+          <span className={`text-[10px] uppercase font-semibold tracking-wide rounded-full px-2.5 py-0.5 ${severityStyles[e.severity] ?? "bg-slate-100 text-slate-600 border border-slate-200"}`}>
+            {e.severity}
+          </span>
+          <span className="font-mono text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded">
+            {e.type}
+          </span>
+        </div>
       </div>
 
+      {/* Meta grid */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <Field label="Severity" value={e.severity} highlight />
-        <Field label="Type" value={e.type} />
-        <Field label="Project" value={row.projectName} link={`/dashboard/projects/${row.projectId}`} />
-        <Field label="Occurred" value={formatDate(e.occurredAt)} />
-        <Field label="SDK" value={`${e.sdkLanguage ?? "?"} ${e.sdkVersion ?? ""}`} />
-        <Field label="Source" value={e.source ?? "—"} />
-        <Field label="Session ID" value={e.sessionId ?? "—"} mono />
-        <Field label="Pattern" value={e.pattern ?? "—"} mono />
+        <MetaCard label="Project">
+          <Link href={`/dashboard/projects/${row.projectId}`} className="text-sm font-medium text-green-700 hover:underline">
+            {row.projectName}
+          </Link>
+        </MetaCard>
+        <MetaCard label="Occurred">
+          <span className="text-sm text-slate-800">{formatDate(e.occurredAt)}</span>
+        </MetaCard>
+        <MetaCard label="SDK">
+          <span className="text-sm text-slate-800">{e.sdkLanguage ?? "?"} {e.sdkVersion ?? ""}</span>
+        </MetaCard>
+        <MetaCard label="Source">
+          <span className="text-sm text-slate-800">{e.source ?? "—"}</span>
+        </MetaCard>
+        <MetaCard label="Pattern" mono>
+          <span className="font-mono text-xs text-slate-700 break-all">{e.pattern ?? "—"}</span>
+        </MetaCard>
+        <MetaCard label="Session ID" mono>
+          <span className="font-mono text-xs text-slate-500 break-all">{e.sessionId ?? "—"}</span>
+        </MetaCard>
       </div>
 
+      {/* Message */}
       {e.message && (
-        <section>
-          <h2 className="font-semibold mb-2">Message</h2>
-          <pre className="rounded-lg border bg-muted p-4 text-sm font-mono whitespace-pre-wrap break-words">
+        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+          <div className="px-6 py-4 border-b border-slate-100">
+            <h2 className="text-sm font-semibold text-slate-700">Message</h2>
+          </div>
+          <pre className="px-6 py-5 text-sm font-mono text-slate-800 whitespace-pre-wrap break-words bg-slate-50/50">
             {e.message}
           </pre>
-        </section>
+        </div>
       )}
 
+      {/* Metadata */}
       {e.metadata && Object.keys(e.metadata).length > 0 && (
-        <section>
-          <h2 className="font-semibold mb-2">Metadata</h2>
-          <pre className="rounded-lg border bg-muted p-4 text-sm font-mono whitespace-pre-wrap break-words">
+        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+          <div className="px-6 py-4 border-b border-slate-100">
+            <h2 className="text-sm font-semibold text-slate-700">Metadata</h2>
+          </div>
+          <pre className="px-6 py-5 text-xs font-mono text-slate-700 whitespace-pre-wrap break-words bg-[#0a0f1a] text-green-300">
             {JSON.stringify(e.metadata, null, 2)}
           </pre>
-        </section>
+        </div>
       )}
 
+      {/* Session trace */}
       {siblings.length > 1 && (
-        <section>
-          <h2 className="font-semibold mb-2">Session trace ({siblings.length} events)</h2>
-          <div className="rounded-lg border divide-y text-sm">
-            {siblings.map((s) => (
+        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+          <div className="px-6 py-4 border-b border-slate-100 flex items-center gap-2">
+            <GitBranch size={15} className="text-slate-400" />
+            <h2 className="text-sm font-semibold text-slate-700">Session trace</h2>
+            <span className="text-xs text-slate-400">({siblings.length} events)</span>
+          </div>
+          <div className="divide-y divide-slate-50">
+            {siblings.map((s, idx) => (
               <Link
                 key={s.id}
                 href={`/dashboard/events/${s.id}`}
-                className={`flex gap-4 px-4 py-2 hover:bg-accent ${s.id === e.id ? "bg-accent" : ""}`}
+                className={`flex items-center gap-4 px-6 py-3 hover:bg-slate-50 transition-colors text-sm ${
+                  s.id === e.id ? "bg-green-50/50 border-l-2 border-green-400" : idx % 2 !== 0 ? "bg-slate-50/30" : ""
+                }`}
               >
-                <span className="text-xs text-muted-foreground font-mono">
-                  {formatDate(s.occurredAt)}
+                <span className="text-xs text-slate-400 font-mono whitespace-nowrap">{formatDate(s.occurredAt)}</span>
+                <span className={`text-[10px] uppercase font-semibold tracking-wide rounded-full px-2 py-0.5 flex-shrink-0 ${severityStyles[s.severity] ?? "bg-slate-100 text-slate-600 border border-slate-200"}`}>
+                  {s.severity}
                 </span>
-                <span className="text-xs uppercase">{s.severity}</span>
-                <span className="font-mono text-xs">{s.type}</span>
-                <span className="flex-1 truncate">{s.message ?? s.pattern ?? "—"}</span>
+                <span className="font-mono text-xs bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded flex-shrink-0">{s.type}</span>
+                <span className="flex-1 truncate text-slate-700">{s.message ?? s.pattern ?? "—"}</span>
               </Link>
             ))}
           </div>
-        </section>
+        </div>
       )}
     </div>
   );
 }
 
-function Field({
-  label,
-  value,
-  highlight,
-  mono,
-  link,
-}: {
-  label: string;
-  value: string;
-  highlight?: boolean;
-  mono?: boolean;
-  link?: string;
-}) {
-  const content = (
-    <div className={`rounded-lg border p-3 ${highlight ? "border-amber-500" : ""}`}>
-      <div className="text-xs uppercase text-muted-foreground">{label}</div>
-      <div className={`mt-1 ${mono ? "font-mono text-xs break-all" : "text-sm"}`}>
-        {value}
-      </div>
+function MetaCard({ label, children, mono }: { label: string; children: React.ReactNode; mono?: boolean }) {
+  return (
+    <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-4">
+      <p className="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">{label}</p>
+      <div className={mono ? "font-mono text-xs break-all" : ""}>{children}</div>
     </div>
   );
-  return link ? <Link href={link as never}>{content}</Link> : content;
 }

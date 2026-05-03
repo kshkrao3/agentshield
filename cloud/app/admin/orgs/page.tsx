@@ -6,6 +6,12 @@ import { formatDate } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 
+const planColors: Record<string, string> = {
+  free: "bg-slate-100 text-slate-600 border border-slate-200",
+  pro: "bg-green-50 text-green-700 border border-green-200",
+  team: "bg-blue-50 text-blue-700 border border-blue-200",
+};
+
 export default async function AdminOrgsPage() {
   await requireAdmin();
   const db = getDb();
@@ -27,57 +33,64 @@ export default async function AdminOrgsPage() {
     .orderBy(desc(organization.createdAt));
 
   return (
-    <div className="space-y-6">
+    <div className="px-8 py-8 space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold">Orgs & Billing</h1>
-        <p className="text-sm text-muted-foreground">{orgs.length} orgs</p>
+        <h1 className="text-2xl font-semibold text-slate-900">Orgs & Billing</h1>
+        <p className="text-sm text-slate-500 mt-0.5">{orgs.length} orgs</p>
       </div>
 
-      <div className="rounded-lg border overflow-x-auto">
+      <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-x-auto">
         <table className="w-full text-sm">
-          <thead className="bg-muted text-xs uppercase text-muted-foreground">
-            <tr>
-              <th className="text-left px-4 py-2 font-medium">Org</th>
-              <th className="text-left px-4 py-2 font-medium">Owner</th>
-              <th className="text-left px-4 py-2 font-medium">Plan</th>
-              <th className="text-left px-4 py-2 font-medium">Status</th>
-              <th className="text-left px-4 py-2 font-medium">Projects</th>
-              <th className="text-left px-4 py-2 font-medium">Events (mo)</th>
-              <th className="text-left px-4 py-2 font-medium">Renews</th>
-              <th className="text-left px-4 py-2 font-medium">LS Sub ID</th>
-              <th className="text-left px-4 py-2 font-medium">Created</th>
+          <thead>
+            <tr className="border-b border-slate-100 bg-slate-50/60">
+              <th className="text-left px-6 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500">Org</th>
+              <th className="text-left px-6 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500">Owner</th>
+              <th className="text-left px-6 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500">Plan</th>
+              <th className="text-left px-6 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500">Status</th>
+              <th className="text-right px-6 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500">Projects</th>
+              <th className="text-right px-6 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500">Events (mo)</th>
+              <th className="text-left px-6 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500">Renews</th>
+              <th className="text-left px-6 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500">LS Sub ID</th>
+              <th className="text-left px-6 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500">Created</th>
             </tr>
           </thead>
-          <tbody className="divide-y">
+          <tbody className="divide-y divide-slate-50">
             {orgs.map(({ org, ownerEmail, projectCount, monthEvents }) => (
-              <tr key={org.id} className="hover:bg-accent">
-                <td className="px-4 py-2 font-medium whitespace-nowrap">{org.name}</td>
-                <td className="px-4 py-2 font-mono text-xs text-muted-foreground whitespace-nowrap">{ownerEmail ?? "—"}</td>
-                <td className="px-4 py-2">
-                  <span className="text-xs uppercase rounded-full bg-secondary px-2 py-0.5">{org.plan}</span>
+              <tr key={org.id} className="hover:bg-slate-50/50 transition-colors">
+                <td className="px-6 py-3.5 font-medium text-slate-800 whitespace-nowrap">{org.name}</td>
+                <td className="px-6 py-3.5 font-mono text-xs text-slate-400 whitespace-nowrap">{ownerEmail ?? "—"}</td>
+                <td className="px-6 py-3.5">
+                  <span className={`text-[10px] uppercase font-semibold tracking-wide rounded-full px-2.5 py-0.5 ${planColors[org.plan] ?? "bg-slate-100 text-slate-600 border border-slate-200"}`}>
+                    {org.plan}
+                  </span>
                 </td>
-                <td className="px-4 py-2 text-xs">
+                <td className="px-6 py-3.5">
                   {org.subscriptionStatus ? (
-                    <span className={`rounded-full px-2 py-0.5 ${
-                      org.subscriptionStatus === "active" ? "bg-green-100 text-green-800" : "bg-amber-100 text-amber-800"
+                    <span className={`text-[10px] uppercase font-semibold tracking-wide rounded-full px-2.5 py-0.5 ${
+                      org.subscriptionStatus === "active"
+                        ? "bg-green-50 text-green-700 border border-green-200"
+                        : "bg-amber-50 text-amber-700 border border-amber-200"
                     }`}>
                       {org.subscriptionStatus}
                     </span>
-                  ) : "—"}
+                  ) : <span className="text-slate-400 text-xs">—</span>}
                 </td>
-                <td className="px-4 py-2 text-center">{projectCount}</td>
-                <td className="px-4 py-2 text-right tabular-nums">{Number(monthEvents).toLocaleString()}</td>
-                <td className="px-4 py-2 text-xs text-muted-foreground whitespace-nowrap">
+                <td className="px-6 py-3.5 text-right tabular-nums text-slate-700">{projectCount}</td>
+                <td className="px-6 py-3.5 text-right tabular-nums text-slate-700">{Number(monthEvents).toLocaleString()}</td>
+                <td className="px-6 py-3.5 text-xs text-slate-400 whitespace-nowrap">
                   {org.currentPeriodEnd ? formatDate(org.currentPeriodEnd) : "—"}
                 </td>
-                <td className="px-4 py-2 font-mono text-xs text-muted-foreground truncate max-w-xs">
+                <td className="px-6 py-3.5 font-mono text-xs text-slate-400 truncate max-w-[12rem]">
                   {org.lsSubscriptionId ?? "—"}
                 </td>
-                <td className="px-4 py-2 text-xs text-muted-foreground whitespace-nowrap">{formatDate(org.createdAt)}</td>
+                <td className="px-6 py-3.5 text-xs text-slate-400 whitespace-nowrap">{formatDate(org.createdAt)}</td>
               </tr>
             ))}
           </tbody>
         </table>
+        {orgs.length === 0 && (
+          <div className="px-6 py-12 text-center text-sm text-slate-400">No orgs yet.</div>
+        )}
       </div>
     </div>
   );

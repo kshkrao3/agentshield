@@ -8,10 +8,10 @@ import { formatRelativeTime } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 
-const SEVERITY_COLORS: Record<string, string> = {
-  low: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300",
-  medium: "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300",
-  high: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300",
+const severityStyles: Record<string, string> = {
+  high: "bg-red-50 text-red-700 border border-red-200",
+  medium: "bg-amber-50 text-amber-700 border border-amber-200",
+  low: "bg-blue-50 text-blue-700 border border-blue-200",
 };
 
 export default async function AdminEventsPage({
@@ -44,15 +44,16 @@ export default async function AdminEventsPage({
   ]);
 
   return (
-    <div className="space-y-6">
+    <div className="px-8 py-8 space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold">Global Events</h1>
-        <p className="text-sm text-muted-foreground">
-          {total.toLocaleString()} events — showing latest 200.
+        <h1 className="text-2xl font-semibold text-slate-900">Global Events</h1>
+        <p className="text-sm text-slate-500 mt-0.5">
+          {Number(total).toLocaleString()} events — showing latest 200
         </p>
       </div>
 
-      <div className="flex gap-3 text-sm flex-wrap">
+      {/* Filters */}
+      <div className="flex gap-3 flex-wrap">
         <FilterGroup
           param="range"
           current={sp.range}
@@ -90,37 +91,39 @@ export default async function AdminEventsPage({
       </div>
 
       {rows.length === 0 ? (
-        <div className="rounded-lg border border-dashed p-12 text-center text-muted-foreground">
+        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm px-6 py-16 text-center text-sm text-slate-400">
           No events match your filters.
         </div>
       ) : (
-        <div className="rounded-lg border overflow-x-auto">
+        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-x-auto">
           <table className="w-full text-sm">
-            <thead className="bg-muted text-xs uppercase text-muted-foreground">
-              <tr>
-                <th className="text-left px-4 py-2 font-medium">Sev</th>
-                <th className="text-left px-4 py-2 font-medium">Type</th>
-                <th className="text-left px-4 py-2 font-medium">Org</th>
-                <th className="text-left px-4 py-2 font-medium">Project</th>
-                <th className="text-left px-4 py-2 font-medium">Message</th>
-                <th className="text-left px-4 py-2 font-medium">When</th>
+            <thead>
+              <tr className="border-b border-slate-100 bg-slate-50/60">
+                <th className="text-left px-6 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500">Severity</th>
+                <th className="text-left px-6 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500">Type</th>
+                <th className="text-left px-6 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500">Org</th>
+                <th className="text-left px-6 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500">Project</th>
+                <th className="text-left px-6 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500">Message</th>
+                <th className="text-left px-6 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500">When</th>
               </tr>
             </thead>
-            <tbody className="divide-y">
+            <tbody className="divide-y divide-slate-50">
               {rows.map(({ event: e, projectName, orgName }) => (
-                <tr key={e.id} className="hover:bg-accent">
-                  <td className="px-4 py-2">
-                    <span className={`text-xs uppercase rounded-full px-2 py-0.5 font-medium ${SEVERITY_COLORS[e.severity] ?? ""}`}>
+                <tr key={e.id} className="hover:bg-slate-50/50 transition-colors">
+                  <td className="px-6 py-3.5">
+                    <span className={`text-[10px] uppercase font-semibold tracking-wide rounded-full px-2.5 py-0.5 ${severityStyles[e.severity] ?? "bg-slate-100 text-slate-600 border border-slate-200"}`}>
                       {e.severity}
                     </span>
                   </td>
-                  <td className="px-4 py-2 font-mono text-xs">{e.type}</td>
-                  <td className="px-4 py-2 text-muted-foreground text-xs">{orgName}</td>
-                  <td className="px-4 py-2 text-muted-foreground text-xs">{projectName}</td>
-                  <td className="px-4 py-2 max-w-sm truncate text-xs">
+                  <td className="px-6 py-3.5">
+                    <span className="font-mono text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded">{e.type}</span>
+                  </td>
+                  <td className="px-6 py-3.5 text-xs text-slate-500">{orgName}</td>
+                  <td className="px-6 py-3.5 text-xs text-slate-500">{projectName}</td>
+                  <td className="px-6 py-3.5 max-w-sm truncate text-xs text-slate-700">
                     {e.message ?? e.pattern ?? "(no message)"}
                   </td>
-                  <td className="px-4 py-2 text-muted-foreground text-xs whitespace-nowrap">
+                  <td className="px-6 py-3.5 text-xs text-slate-400 whitespace-nowrap">
                     {formatRelativeTime(e.occurredAt)}
                   </td>
                 </tr>
@@ -141,10 +144,14 @@ function FilterGroup({
   defaultValue: string;
 }) {
   return (
-    <div className="flex gap-1 rounded-md border p-1">
+    <div className="flex gap-1 bg-white rounded-xl border border-slate-200 p-1">
       <Link
         href={`${base}&${param}=` as Route}
-        className={`rounded px-2 py-0.5 text-xs ${!current || current === defaultValue ? "bg-primary text-primary-foreground" : "hover:bg-accent"}`}
+        className={`rounded-lg px-3 py-1 text-xs font-medium transition-colors ${
+          !current || current === defaultValue
+            ? "bg-slate-900 text-white"
+            : "text-slate-600 hover:bg-slate-100"
+        }`}
       >
         All
       </Link>
@@ -152,7 +159,11 @@ function FilterGroup({
         <Link
           key={o.value}
           href={`${base}&${param}=${o.value}` as Route}
-          className={`rounded px-2 py-0.5 text-xs ${current === o.value ? "bg-primary text-primary-foreground" : "hover:bg-accent"}`}
+          className={`rounded-lg px-3 py-1 text-xs font-medium transition-colors ${
+            current === o.value
+              ? "bg-slate-900 text-white"
+              : "text-slate-600 hover:bg-slate-100"
+          }`}
         >
           {o.label}
         </Link>
