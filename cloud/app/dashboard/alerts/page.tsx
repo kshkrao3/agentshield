@@ -5,6 +5,7 @@ import { alertRule, project } from "@/drizzle/schema";
 import { desc, eq } from "drizzle-orm";
 import { PLAN_LIMITS, Plan } from "@/lib/plans";
 import { Bell, Zap } from "lucide-react";
+import { UpgradeModal } from "@/components/upgrade-modal";
 
 export default async function AlertsPage() {
   const user = await requireUser();
@@ -28,12 +29,10 @@ export default async function AlertsPage() {
           <p className="text-sm text-slate-500 mb-6 max-w-sm mx-auto">
             Get notified in Slack, email, or webhooks when violations match your rules.
           </p>
-          <Link
-            href="/pricing"
+          <UpgradeModal
+            label="Upgrade to Pro"
             className="inline-flex h-9 items-center rounded-xl bg-green-600 text-white px-5 text-sm font-medium hover:bg-green-700 transition-colors"
-          >
-            Upgrade to Pro
-          </Link>
+          />
         </div>
       </div>
     );
