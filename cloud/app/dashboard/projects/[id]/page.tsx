@@ -6,6 +6,7 @@ import { project, apiKey, event } from "@/drizzle/schema";
 import { and, desc, eq, gte, isNull, sql } from "drizzle-orm";
 import { ApiKeyManager } from "./api-key-manager";
 import { formatRelativeTime, formatDate } from "@/lib/utils";
+import { Zap, Key, Clock } from "lucide-react";
 
 export default async function ProjectDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const user = await requireUser();
@@ -27,11 +28,11 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
     .where(and(eq(apiKey.projectId, id), isNull(apiKey.revokedAt)))
     .orderBy(desc(apiKey.createdAt));
 
-  const since = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+  const since7d = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
   const recentEvents = await db
     .select()
     .from(event)
-    .where(and(eq(event.projectId, id), gte(event.occurredAt, since)))
+    .where(and(eq(event.projectId, id), gte(event.occurredAt, since7d)))
     .orderBy(desc(event.occurredAt))
     .limit(10);
 
@@ -43,78 +44,112 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
       gte(event.occurredAt, new Date(Date.now() - 24 * 60 * 60 * 1000)),
     ));
 
+  const envColor = p.environment === "prod" ? "bg-green-500" : p.environment === "staging" ? "bg-amber-400" : "bg-slate-400";
+  const envBadge = p.environment === "prod"
+    ? "bg-green-50 text-green-700 border border-green-200"
+    : p.environment === "staging"
+    ? "bg-amber-50 text-amber-700 border border-amber-200"
+    : "bg-slate-100 text-slate-600 border border-slate-200";
+
   return (
-    <div className="space-y-8">
-      <div className="flex items-center justify-between">
-        <div>
-          <Link href="/dashboard" className="text-sm text-muted-foreground hover:text-foreground">
-            ← Projects
-          </Link>
-          <h1 className="text-2xl font-semibold mt-1">{p.name}</h1>
-          <p className="text-muted-foreground text-sm">
-            {p.slug} · {p.environment}
-          </p>
-        </div>
-        <div className="text-right">
-          <div className="text-3xl font-semibold">{count24h}</div>
-          <div className="text-xs text-muted-foreground">events / 24h</div>
+    <div className="px-8 py-8 space-y-8">
+      {/* Header */}
+      <div>
+        <Link href="/dashboard" className="text-sm text-slate-400 hover:text-slate-700 transition-colors">
+          ← Projects
+        </Link>
+        <div className="flex items-start justify-between mt-2">
+          <div className="flex items-center gap-3">
+            <div className={`w-2 h-8 rounded-full ${envColor}`} />
+            <div>
+              <h1 className="text-2xl font-semibold text-slate-900">{p.name}</h1>
+              <div className="flex items-center gap-2 mt-0.5">
+                <span className="text-xs text-slate-400 font-mono">{p.slug}</span>
+                <span className={`text-[10px] uppercase font-semibold tracking-wide rounded-full px-2 py-0.5 ${envBadge}`}>
+                  {p.environment}
+                </span>
+              </div>
+            </div>
+          </div>
+          <div className="bg-white rounded-2xl border border-slate-100 shadow-sm px-6 py-4 text-right">
+            <p className="text-3xl font-bold text-slate-900">{count24h.toLocaleString()}</p>
+            <p className="text-xs text-slate-400 mt-0.5">events / 24h</p>
+          </div>
         </div>
       </div>
 
-      <section>
-        <h2 className="text-lg font-semibold mb-3">API keys</h2>
-        <ApiKeyManager projectId={id} keys={keys.map((k) => ({
-          id: k.id,
-          name: k.name,
-          prefix: k.keyPrefix,
-          createdAt: k.createdAt.toISOString(),
-          lastUsedAt: k.lastUsedAt?.toISOString() ?? null,
-        }))} />
-      </section>
+      {/* API Keys */}
+      <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+        <div className="px-6 py-4 border-b border-slate-100 flex items-center gap-2">
+          <Key size={15} className="text-slate-400" />
+          <h2 className="text-sm font-semibold text-slate-700">API Keys</h2>
+        </div>
+        <div className="p-6">
+          <ApiKeyManager projectId={id} keys={keys.map((k) => ({
+            id: k.id,
+            name: k.name,
+            prefix: k.keyPrefix,
+            createdAt: k.createdAt.toISOString(),
+            lastUsedAt: k.lastUsedAt?.toISOString() ?? null,
+          }))} />
+        </div>
+      </div>
 
-      <section>
-        <div className="flex items-center justify-between mb-3">
-          <h2 className="text-lg font-semibold">Recent events</h2>
+      {/* Recent Events */}
+      <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+        <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Zap size={15} className="text-slate-400" />
+            <h2 className="text-sm font-semibold text-slate-700">Recent events</h2>
+            <span className="text-xs text-slate-400">(last 7 days)</span>
+          </div>
           <Link
             href={`/dashboard/events?project=${id}`}
-            className="text-sm text-muted-foreground hover:text-foreground"
+            className="text-xs text-green-700 hover:text-green-800 font-medium transition-colors"
           >
             View all →
           </Link>
         </div>
         {recentEvents.length === 0 ? (
-          <div className="rounded-lg border border-dashed p-8 text-center text-muted-foreground">
-            No events yet. Once your SDK reports a violation, it&apos;ll appear here.
+          <div className="p-12 text-center">
+            <div className="w-12 h-12 rounded-2xl bg-slate-50 flex items-center justify-center mx-auto mb-3">
+              <Zap size={22} className="text-slate-300" />
+            </div>
+            <p className="text-sm text-slate-500">No events yet.</p>
+            <p className="text-xs text-slate-400 mt-1">Once your SDK reports a violation it&apos;ll appear here.</p>
           </div>
         ) : (
-          <div className="rounded-lg border divide-y">
-            {recentEvents.map((e) => (
+          <div className="divide-y divide-slate-50">
+            {recentEvents.map((e, idx) => (
               <Link
                 key={e.id}
                 href={`/dashboard/events/${e.id}`}
-                className="flex items-center gap-4 px-4 py-3 hover:bg-accent text-sm"
+                className={`flex items-center gap-4 px-6 py-3 hover:bg-slate-50/80 transition-colors ${idx % 2 !== 0 ? "bg-slate-50/30" : ""}`}
               >
                 <SeverityBadge severity={e.severity} />
-                <span className="font-mono text-xs">{e.type}</span>
-                <span className="flex-1 truncate">{e.message ?? e.pattern ?? "(no message)"}</span>
-                <span className="text-muted-foreground text-xs">{formatRelativeTime(e.occurredAt)}</span>
+                <span className="font-mono text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded">{e.type}</span>
+                <span className="flex-1 truncate text-sm text-slate-700">{e.message ?? e.pattern ?? "(no message)"}</span>
+                <span className="text-xs text-slate-400 whitespace-nowrap flex items-center gap-1">
+                  <Clock size={11} />
+                  {formatRelativeTime(e.occurredAt)}
+                </span>
               </Link>
             ))}
           </div>
         )}
-      </section>
+      </div>
     </div>
   );
 }
 
 function SeverityBadge({ severity }: { severity: string }) {
-  const colors: Record<string, string> = {
-    low: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300",
-    medium: "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300",
-    high: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300",
+  const styles: Record<string, string> = {
+    high: "bg-red-50 text-red-700 border border-red-200",
+    medium: "bg-amber-50 text-amber-700 border border-amber-200",
+    low: "bg-blue-50 text-blue-700 border border-blue-200",
   };
   return (
-    <span className={`text-xs uppercase rounded-full px-2 py-0.5 font-medium ${colors[severity] ?? ""}`}>
+    <span className={`text-[10px] uppercase font-semibold tracking-wide rounded-full px-2.5 py-0.5 ${styles[severity] ?? "bg-slate-100 text-slate-600 border border-slate-200"}`}>
       {severity}
     </span>
   );
