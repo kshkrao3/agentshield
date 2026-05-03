@@ -44,7 +44,7 @@ export default async function AlertsPage() {
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-semibold">Alerts</h1>
         <Link
-          href="/dashboard/alerts"
+          href="/dashboard/alerts/new"
           className="inline-flex h-9 items-center rounded-md bg-primary text-primary-foreground px-4 text-sm font-medium"
         >
           New rule
