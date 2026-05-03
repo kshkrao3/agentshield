@@ -1,0 +1,15 @@
+# Copy to .dev.vars for local development (used by wrangler)
+BETTER_AUTH_SECRET="generate-with-openssl-rand-hex-32"
+BETTER_AUTH_URL="http://localhost:3000"
+GITHUB_CLIENT_ID="your-github-oauth-app-id"
+GITHUB_CLIENT_SECRET="your-github-oauth-app-secret"
+STRIPE_SECRET_KEY="sk_test_..."
+STRIPE_WEBHOOK_SECRET="whsec_..."
+STRIPE_PRO_PRICE_ID="price_..."
+STRIPE_TEAM_PRICE_ID="price_..."
+NEXT_PUBLIC_APP_URL="http://localhost:3000"
+
+# Drizzle migrations (loaded from .env, not .dev.vars)
+CLOUDFLARE_ACCOUNT_ID=""
+CLOUDFLARE_D1_DATABASE_ID=""
+CLOUDFLARE_API_TOKEN=""

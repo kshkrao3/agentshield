@@ -3,6 +3,8 @@ export { PromptFirewall } from "./firewall.js";
 export { ToolSentinel } from "./sentinel.js";
 export { MemoryGuard } from "./memory-guard.js";
 export { AuditEmitter } from "./audit.js";
+export { Reporter } from "./reporter.js";
 export type { Policy, ViolationMode, Sensitivity } from "./policy.js";
 export type { ViolationEvent, ViolationType, Severity } from "./audit.js";
+export type { ReporterOptions } from "./reporter.js";
 export type { OpenAIAgentTool } from "./adapters/openai-agents.js";

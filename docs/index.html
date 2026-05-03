@@ -172,7 +172,19 @@
   <!-- Nav -->
   <nav class="fixed top-0 w-full z-50 border-b border-white/5 bg-dark-900/80 backdrop-blur-md">
     <div class="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between">
-      <span class="font-mono font-bold text-brand-500 tracking-tight">AgentShield</span>
+      <span class="flex items-center gap-2 font-bold tracking-tight">
+        <svg width="28" height="31" viewBox="0 0 40 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="sg" x1="0" y1="0" x2="40" y2="44" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#4ade80"/>
+              <stop offset="100%" stop-color="#16a34a"/>
+            </linearGradient>
+          </defs>
+          <path d="M20 2L37 8.5V19C37 29.5 29.5 38 20 42C10.5 38 3 29.5 3 19V8.5L20 2Z" fill="url(#sg)" fill-opacity="0.15" stroke="url(#sg)" stroke-width="2" stroke-linejoin="round"/>
+          <path d="M12 21L17.5 27L28 15" stroke="url(#sg)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span class="text-white">Agent<span class="text-brand-500">Shield</span></span>
+      </span>
 
       <!-- Desktop menu -->
       <div class="hidden sm:flex items-center gap-6 text-sm text-gray-400">

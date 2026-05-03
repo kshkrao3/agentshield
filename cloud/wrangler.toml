@@ -1,0 +1,41 @@
+name = "agentshield-cloud"
+compatibility_date = "2025-04-01"
+compatibility_flags = ["nodejs_compat"]
+main = ".open-next/worker.js"
+assets = { directory = ".open-next/assets", binding = "ASSETS" }
+
+[vars]
+NEXT_PUBLIC_APP_URL = "https://agentshield-cloud.pages.dev"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "agentshield-cloud"
+database_id = "e1145809-e476-4fee-bf02-b131678a7cdb"
+migrations_dir = "drizzle/migrations"
+
+[[kv_namespaces]]
+binding = "KV"
+id = "2e33db0200ac4bd68b971236b2e5368e"
+
+[[r2_buckets]]
+binding = "EVENT_LOGS"
+bucket_name = "agentshield-event-logs"
+
+# ----- Ingestion Worker (separate deployment) -----
+# Run: pnpm worker:deploy
+[env.ingest]
+name = "agentshield-ingest"
+main = "workers/ingest/index.ts"
+
+[[env.ingest.d1_databases]]
+binding = "DB"
+database_name = "agentshield-cloud"
+database_id = "e1145809-e476-4fee-bf02-b131678a7cdb"
+
+[[env.ingest.kv_namespaces]]
+binding = "KV"
+id = "2e33db0200ac4bd68b971236b2e5368e"
+
+[[env.ingest.r2_buckets]]
+binding = "EVENT_LOGS"
+bucket_name = "agentshield-event-logs"
