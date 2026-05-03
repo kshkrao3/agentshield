@@ -5,6 +5,7 @@ from .audit import AuditEmitter, ViolationEvent
 from .firewall import PromptFirewall
 from .memory_guard import MemoryGuard
 from .policy import Policy
+from .reporter import Reporter
 from .sentinel import ToolSentinel
 
 
@@ -18,6 +19,7 @@ class Shield:
         policy: Optional[Policy] = None,
         audit: Optional[dict] = None,
         session_id: Optional[str] = None,
+        reporter: Optional[Reporter] = None,
     ):
         self._policy = policy or Policy()
         self._session_id = session_id or str(uuid.uuid4())
@@ -25,6 +27,9 @@ class Shield:
         self._firewall = PromptFirewall(self._policy, self._emitter, self._session_id)
         self._sentinel = ToolSentinel(self._policy, self._emitter, self._session_id)
         self._memory = MemoryGuard(self._policy, self._emitter, self._session_id)
+        if reporter is not None:
+            self._emitter.on_violation(reporter)
+        self._reporter = reporter
 
     @property
     def memory(self) -> MemoryGuard:

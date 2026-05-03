@@ -3,6 +3,7 @@ import { AuditEmitter, ViolationEvent } from "./audit.js";
 import { PromptFirewall } from "./firewall.js";
 import { MemoryGuard } from "./memory-guard.js";
 import { Policy, defaultPolicy } from "./policy.js";
+import { Reporter, ReporterOptions } from "./reporter.js";
 import { ToolSentinel } from "./sentinel.js";
 
 export class ShieldViolationError extends Error {}
@@ -12,16 +13,31 @@ export class Shield {
   readonly firewall: PromptFirewall;
   readonly sentinel: ToolSentinel;
   readonly memory: MemoryGuard;
+  readonly reporter: Reporter | null;
   private resolvedPolicy: Required<Policy>;
   private sessionId: string;
 
-  constructor(options: { policy?: Policy; audit?: Record<string, unknown>; sessionId?: string } = {}) {
+  constructor(options: {
+    policy?: Policy;
+    audit?: Record<string, unknown>;
+    sessionId?: string;
+    reporter?: ReporterOptions | Reporter;
+  } = {}) {
     this.resolvedPolicy = { ...defaultPolicy(), ...options.policy };
     this.sessionId = options.sessionId ?? randomUUID();
     this.emitter = new AuditEmitter(options.audit ?? {});
     this.firewall = new PromptFirewall(this.resolvedPolicy, this.emitter, this.sessionId);
     this.sentinel = new ToolSentinel(this.resolvedPolicy, this.emitter, this.sessionId);
     this.memory = new MemoryGuard(this.resolvedPolicy, this.emitter, this.sessionId);
+
+    if (options.reporter) {
+      this.reporter = options.reporter instanceof Reporter
+        ? options.reporter
+        : new Reporter(options.reporter);
+      this.emitter.onViolation(this.reporter.handler);
+    } else {
+      this.reporter = null;
+    }
   }
 
   onViolation(handler: (event: ViolationEvent) => void) {
@@ -65,6 +81,9 @@ export class Shield {
   }
 }
 
-export function shield<T extends object>(agent: T, policy?: Policy): T & { shield: Shield } {
-  return new Shield({ policy }).wrap(agent as T & { invoke?: () => unknown });
+export function shield<T extends object>(
+  agent: T,
+  options?: { policy?: Policy; reporter?: ReporterOptions | Reporter },
+): T & { shield: Shield } {
+  return new Shield(options).wrap(agent as T & { invoke?: () => unknown });
 }
