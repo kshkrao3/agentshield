@@ -33,3 +33,15 @@ export async function requireActiveOrg(userId: string) {
   if (!org) redirect("/onboarding");
   return org;
 }
+
+const ADMIN_EMAIL = "kshkrao3@gmail.com";
+
+export async function requireAdmin() {
+  const user = await getCurrentUser();
+  if (!user || user.email !== ADMIN_EMAIL) redirect("/dashboard");
+  return user;
+}
+
+export function isAdmin(email: string) {
+  return email === ADMIN_EMAIL;
+}

@@ -1,10 +1,11 @@
 import Link from "next/link";
-import { requireUser, requireActiveOrg } from "@/lib/session";
+import { requireUser, requireActiveOrg, isAdmin } from "@/lib/session";
 import { SignOutButton } from "@/components/sign-out-button";
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const user = await requireUser();
   const org = await requireActiveOrg(user.id);
+  const admin = isAdmin(user.email);
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -18,6 +19,9 @@ export default async function DashboardLayout({ children }: { children: React.Re
               <Link href="/dashboard/analytics" className="text-muted-foreground hover:text-foreground">Analytics</Link>
               <Link href="/dashboard/alerts" className="text-muted-foreground hover:text-foreground">Alerts</Link>
               <Link href="/dashboard/settings" className="text-muted-foreground hover:text-foreground">Settings</Link>
+              {admin && (
+                <Link href="/admin" className="text-green-600 hover:text-green-700 font-medium">Admin</Link>
+              )}
             </nav>
           </div>
           <div className="flex items-center gap-3 text-sm">
