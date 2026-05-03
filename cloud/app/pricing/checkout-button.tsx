@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
 
-export function CheckoutButton({ plan }: { plan: "pro" | "team" }) {
+export function CheckoutButton({ plan, className }: { plan: "pro" | "team"; className?: string }) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
@@ -32,7 +32,7 @@ export function CheckoutButton({ plan }: { plan: "pro" | "team" }) {
     <button
       onClick={handleClick}
       disabled={loading}
-      className="block w-full h-10 rounded-md bg-primary text-primary-foreground font-medium hover:opacity-90 disabled:opacity-50"
+      className={className ?? "block w-full h-10 rounded-md bg-primary text-primary-foreground font-medium hover:opacity-90 disabled:opacity-50"}
     >
       {loading ? "Loading..." : "Upgrade"}
     </button>

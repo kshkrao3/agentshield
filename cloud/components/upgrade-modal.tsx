@@ -46,7 +46,7 @@ export function UpgradeModal({ label = "Upgrade to Pro", className = "" }: Props
             </div>
 
             {/* Cards */}
-            <div className="px-8 py-8 grid grid-cols-1 sm:grid-cols-3 gap-5">
+            <div className="px-8 py-8 grid grid-cols-1 sm:grid-cols-3 gap-5 items-stretch">
               <PricingCard
                 name="Free"
                 price={0}
@@ -67,14 +67,24 @@ export function UpgradeModal({ label = "Upgrade to Pro", className = "" }: Props
                 description="Production agents"
                 highlighted
                 features={["1M events/month", "90-day retention", "3 projects", "Slack/email/webhook alerts", "Email support"]}
-                cta={<CheckoutButton plan="pro" />}
+                cta={
+                  <CheckoutButton
+                    plan="pro"
+                    className="block w-full h-10 rounded-xl bg-green-400 text-black text-sm font-semibold hover:bg-green-300 disabled:opacity-50 transition-colors"
+                  />
+                }
               />
               <PricingCard
                 name="Team"
                 price={99}
                 description="Teams & multiple agents"
                 features={["10M events/month", "30-day retention", "Unlimited projects", "RBAC + team members", "Priority support"]}
-                cta={<CheckoutButton plan="team" />}
+                cta={
+                  <CheckoutButton
+                    plan="team"
+                    className="block w-full h-10 rounded-xl border border-slate-200 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50 transition-colors"
+                  />
+                }
               />
             </div>
 
@@ -111,17 +121,17 @@ function PricingCard({
   highlighted?: boolean;
 }) {
   return (
-    <div className={`relative rounded-2xl p-5 flex flex-col gap-5 ${
+    <div className={`relative rounded-2xl flex flex-col h-full ${
       highlighted
-        ? "bg-[#0a0f1a] text-white ring-2 ring-green-400/50"
-        : "border border-slate-100"
+        ? "bg-[#0a0f1a] text-white ring-2 ring-green-400/50 p-6 mt-0"
+        : "border border-slate-100 p-5 mt-4"
     }`}>
       {highlighted && (
-        <span className="absolute -top-3 left-1/2 -translate-x-1/2 text-[10px] uppercase font-bold tracking-widest bg-green-400 text-black px-3 py-0.5 rounded-full">
+        <span className="absolute -top-3.5 left-1/2 -translate-x-1/2 whitespace-nowrap text-[10px] uppercase font-bold tracking-widest bg-green-400 text-black px-3 py-1 rounded-full">
           Most popular
         </span>
       )}
-      <div>
+      <div className="mb-4">
         <p className={`text-xs font-semibold uppercase tracking-wider mb-1 ${highlighted ? "text-green-400" : "text-slate-400"}`}>
           {name}
         </p>
@@ -129,12 +139,12 @@ function PricingCard({
           <span className={`text-3xl font-bold ${highlighted ? "text-white" : "text-slate-900"}`}>
             ${price}
           </span>
-          <span className={`text-sm ${highlighted ? "text-slate-400" : "text-slate-400"}`}>/mo</span>
+          <span className="text-sm text-slate-400">/mo</span>
         </div>
         <p className={`text-xs mt-1 ${highlighted ? "text-slate-400" : "text-slate-500"}`}>{description}</p>
       </div>
 
-      <ul className="space-y-2 flex-1">
+      <ul className="space-y-2.5 flex-1">
         {features.map((f) => (
           <li key={f} className="flex items-start gap-2 text-xs">
             <Check size={13} className={`mt-0.5 flex-shrink-0 ${highlighted ? "text-green-400" : "text-green-600"}`} />
@@ -143,7 +153,7 @@ function PricingCard({
         ))}
       </ul>
 
-      <div>{cta}</div>
+      <div className="mt-5">{cta}</div>
     </div>
   );
 }
