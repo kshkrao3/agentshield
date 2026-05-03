@@ -5,7 +5,7 @@ main = ".open-next/worker.js"
 assets = { directory = ".open-next/assets", binding = "ASSETS" }
 
 [vars]
-NEXT_PUBLIC_APP_URL = "https://agentshield-cloud.pages.dev"
+NEXT_PUBLIC_APP_URL = "https://agentshield-cloud.kshkrao3.workers.dev"
 
 [[d1_databases]]
 binding = "DB"
