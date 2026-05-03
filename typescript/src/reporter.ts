@@ -12,7 +12,7 @@
  * we don't have access to it — rely on next event triggering a synchronous
  * flush).
  */
-import type { Severity, ViolationEvent, ViolationType } from "./audit";
+import type { Severity, ViolationEvent, ViolationType } from "./audit.js";
 
 const DEFAULT_ENDPOINT = "https://ingest.agentshield.dev/v1/events";
 const SDK_VERSION = "0.2.0";
