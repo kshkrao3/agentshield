@@ -41,6 +41,22 @@ export async function POST(req: Request) {
   ) {
     if (!orgId) return NextResponse.json({ received: true });
     const attrs = p.data.attributes;
+
+    // If LS sends updated with status=expired/cancelled, treat as revocation
+    if (attrs.status === "expired" || attrs.status === "cancelled") {
+      await db
+        .update(organization)
+        .set({
+          plan: "free",
+          lsSubscriptionId: null,
+          lsVariantId: null,
+          subscriptionStatus: attrs.status,
+          currentPeriodEnd: null,
+        })
+        .where(eq(organization.id, orgId));
+      return NextResponse.json({ received: true });
+    }
+
     const variantId = String(attrs.variant_id);
     const plan = planFromVariantId(variantId);
     const periodEnd = attrs.renews_at ? new Date(attrs.renews_at) : null;
