@@ -1,6 +1,7 @@
 import { requireUser, requireActiveOrg } from "@/lib/session";
 import { PLAN_LIMITS, Plan } from "@/lib/plans";
 import { ManageBillingButton } from "./billing-button";
+import { CheckoutSuccess } from "./checkout-success";
 import { formatDate } from "@/lib/utils";
 import { CreditCard, User, Code, Zap } from "lucide-react";
 
@@ -13,13 +14,20 @@ const planBadge: Record<string, string> = {
 
 export const dynamic = "force-dynamic";
 
-export default async function SettingsPage() {
+export default async function SettingsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ checkout?: string }>;
+}) {
   const user = await requireUser();
   const org = await requireActiveOrg(user.id);
   const limits = PLAN_LIMITS[org.plan as Plan] ?? PLAN_LIMITS.free;
+  const sp = await searchParams;
+  const checkoutSuccess = sp.checkout === "success";
 
   return (
     <div className="px-8 py-8 space-y-6 max-w-5xl">
+      {checkoutSuccess && <CheckoutSuccess plan={org.plan} />}
       {/* Header */}
       <div>
         <h1 className="text-2xl font-semibold text-slate-900">Settings</h1>
