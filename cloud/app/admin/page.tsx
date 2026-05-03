@@ -3,6 +3,7 @@ import { getDb } from "@/lib/db";
 import { user, organization, event, usageDaily } from "@/drizzle/schema";
 import { sql, gte, eq } from "drizzle-orm";
 import { PLAN_LIMITS, Plan } from "@/lib/plans";
+import { Users, Building2, Zap, TrendingUp, CreditCard, DollarSign } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -43,54 +44,138 @@ export default async function AdminOverviewPage() {
     return acc + (price ?? 0) * p.count;
   }, 0);
 
-  return (
-    <div className="space-y-8">
-      <h1 className="text-2xl font-semibold">Overview</h1>
+  const maxTopOrg = topOrgs.length > 0 ? Number(topOrgs[0].total) : 1;
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <StatCard label="Total users" value={totalUsers.toLocaleString()} />
-        <StatCard label="Total orgs" value={totalOrgs.toLocaleString()} />
-        <StatCard label="Events (24h)" value={events24h.toLocaleString()} />
-        <StatCard label="Events (30d)" value={events30d.toLocaleString()} />
-        <StatCard label="Paid orgs" value={paidOrgs.toLocaleString()} />
-        <StatCard label="MRR (est.)" value={`$${mrrEstimate}`} />
+  function planPillStyle(plan: string) {
+    if (plan === "enterprise") return "bg-purple-50 text-purple-700 border border-purple-200";
+    if (plan === "team") return "bg-blue-50 text-blue-700 border border-blue-200";
+    if (plan === "pro") return "bg-green-50 text-green-700 border border-green-200";
+    return "bg-slate-100 text-slate-600 border border-slate-200";
+  }
+
+  return (
+    <div className="px-8 py-8 space-y-8">
+      <div>
+        <h1 className="text-2xl font-semibold text-slate-900">Overview</h1>
+        <p className="text-slate-500 text-sm mt-0.5">Platform-wide metrics.</p>
       </div>
 
-      <section>
-        <h2 className="font-semibold mb-3">Plan distribution</h2>
-        <div className="rounded-lg border divide-y">
-          {planBreakdown.map((p) => (
-            <div key={p.plan} className="px-4 py-3 flex justify-between text-sm">
-              <span className="uppercase font-mono text-xs">{p.plan}</span>
-              <span>{p.count} orgs</span>
-            </div>
-          ))}
-        </div>
-      </section>
+      {/* Stat cards */}
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+        <StatCard
+          label="Total users"
+          value={Number(totalUsers).toLocaleString()}
+          icon={<Users size={18} className="text-blue-600" />}
+          iconBg="bg-blue-50"
+        />
+        <StatCard
+          label="Total orgs"
+          value={Number(totalOrgs).toLocaleString()}
+          icon={<Building2 size={18} className="text-purple-600" />}
+          iconBg="bg-purple-50"
+        />
+        <StatCard
+          label="Events (24h)"
+          value={Number(events24h).toLocaleString()}
+          icon={<Zap size={18} className="text-green-600" />}
+          iconBg="bg-green-50"
+        />
+        <StatCard
+          label="Events (30d)"
+          value={Number(events30d).toLocaleString()}
+          icon={<TrendingUp size={18} className="text-green-600" />}
+          iconBg="bg-green-50"
+        />
+        <StatCard
+          label="Paid orgs"
+          value={paidOrgs.toLocaleString()}
+          icon={<CreditCard size={18} className="text-amber-600" />}
+          iconBg="bg-amber-50"
+        />
+        <StatCard
+          label="MRR (est.)"
+          value={`$${mrrEstimate.toLocaleString()}`}
+          icon={<DollarSign size={18} className="text-green-600" />}
+          iconBg="bg-green-50"
+        />
+      </div>
 
-      <section>
-        <h2 className="font-semibold mb-3">Top orgs this month</h2>
-        <div className="rounded-lg border divide-y">
-          {topOrgs.length === 0 && (
-            <p className="px-4 py-3 text-sm text-muted-foreground">No usage yet.</p>
-          )}
-          {topOrgs.map((o) => (
-            <div key={o.orgId} className="px-4 py-3 flex justify-between text-sm">
-              <span>{o.name} <span className="text-muted-foreground text-xs uppercase ml-2">{o.plan}</span></span>
-              <span>{Number(o.total).toLocaleString()} events</span>
-            </div>
-          ))}
+      <div className="grid md:grid-cols-2 gap-6">
+        {/* Plan breakdown */}
+        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6">
+          <h2 className="font-semibold text-slate-900 mb-4">Plan distribution</h2>
+          <div className="space-y-2">
+            {planBreakdown.map((p) => (
+              <div key={p.plan} className="flex items-center justify-between">
+                <span className={`text-[10px] uppercase font-semibold tracking-wide rounded-full px-2.5 py-0.5 ${planPillStyle(p.plan)}`}>
+                  {p.plan}
+                </span>
+                <span className="text-sm font-medium text-slate-700">{p.count} orgs</span>
+              </div>
+            ))}
+          </div>
         </div>
-      </section>
+
+        {/* Top orgs */}
+        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6">
+          <h2 className="font-semibold text-slate-900 mb-4">Top orgs this month</h2>
+          {topOrgs.length === 0 ? (
+            <p className="text-sm text-slate-500">No usage yet.</p>
+          ) : (
+            <div className="space-y-3">
+              {topOrgs.map((o, i) => {
+                const pct = Math.round((Number(o.total) / maxTopOrg) * 100);
+                return (
+                  <div key={o.orgId} className="flex items-center gap-3">
+                    <span className="w-4 text-xs font-semibold text-slate-400 flex-shrink-0">{i + 1}</span>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="text-sm font-medium text-slate-800 truncate">{o.name}</span>
+                        <span className="text-xs text-slate-500 tabular-nums ml-2 flex-shrink-0">
+                          {Number(o.total).toLocaleString()}
+                        </span>
+                      </div>
+                      <div className="h-1.5 rounded-full bg-slate-100 overflow-hidden">
+                        <div
+                          className="h-full rounded-full bg-green-400"
+                          style={{ width: `${pct}%` }}
+                        />
+                      </div>
+                    </div>
+                    <span className={`text-[10px] uppercase font-semibold tracking-wide rounded-full px-2 py-0.5 flex-shrink-0 ${planPillStyle(o.plan)}`}>
+                      {o.plan}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 }
 
-function StatCard({ label, value }: { label: string; value: string }) {
+function StatCard({
+  label,
+  value,
+  icon,
+  iconBg,
+}: {
+  label: string;
+  value: string;
+  icon: React.ReactNode;
+  iconBg: string;
+}) {
   return (
-    <div className="rounded-lg border p-4">
-      <div className="text-2xl font-semibold">{value}</div>
-      <div className="text-sm text-muted-foreground mt-1">{label}</div>
+    <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5 flex items-center gap-4">
+      <div className={`w-10 h-10 rounded-xl ${iconBg} flex items-center justify-center flex-shrink-0`}>
+        {icon}
+      </div>
+      <div>
+        <p className="text-2xl font-semibold text-slate-900">{value}</p>
+        <p className="text-xs text-slate-500 mt-0.5">{label}</p>
+      </div>
     </div>
   );
 }
