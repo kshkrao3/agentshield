@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { UpgradeModal } from "@/components/upgrade-modal";
 
 export function ManageBillingButton({
   plan,
@@ -11,16 +12,21 @@ export function ManageBillingButton({
 }) {
   const [loading, setLoading] = useState(false);
 
+  if (!hasSubscription) {
+    return (
+      <UpgradeModal
+        label={plan === "free" ? "Upgrade plan" : "Change plan"}
+        className="inline-flex h-9 items-center rounded-xl bg-green-600 text-white px-5 text-sm font-medium hover:bg-green-700 transition-colors"
+      />
+    );
+  }
+
   async function handleClick() {
     setLoading(true);
-    if (hasSubscription) {
-      const res = await fetch("/api/billing/portal", { method: "POST" });
-      if (res.ok) {
-        const { url } = (await res.json()) as { url: string };
-        window.location.href = url;
-      }
-    } else {
-      window.location.href = "/pricing";
+    const res = await fetch("/api/billing/portal", { method: "POST" });
+    if (res.ok) {
+      const { url } = (await res.json()) as { url: string };
+      window.location.href = url;
     }
     setLoading(false);
   }
@@ -29,9 +35,9 @@ export function ManageBillingButton({
     <button
       onClick={handleClick}
       disabled={loading}
-      className="inline-flex h-9 items-center rounded-md border px-4 text-sm font-medium hover:bg-accent disabled:opacity-50"
+      className="inline-flex h-9 items-center rounded-xl border border-slate-200 px-5 text-sm font-medium hover:bg-slate-50 disabled:opacity-50 transition-colors"
     >
-      {loading ? "Loading..." : hasSubscription ? "Manage billing" : plan === "free" ? "Upgrade" : "Change plan"}
+      {loading ? "Loading..." : "Manage billing"}
     </button>
   );
 }

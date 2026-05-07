@@ -31,10 +31,12 @@ export default async function EventsPage({
 
   if (projectIds.length === 0) {
     return (
-      <div className="rounded-lg border border-dashed p-12 text-center text-muted-foreground">
-        Create a project first to see events.
-        <div className="mt-4">
-          <Link href="/dashboard" className="underline">Go to projects</Link>
+      <div className="px-8 py-8">
+        <div className="bg-white rounded-2xl border border-dashed border-slate-200 p-16 text-center text-slate-500">
+          Create a project first to see events.
+          <div className="mt-4">
+            <Link href="/dashboard" className="text-green-600 underline text-sm">Go to projects</Link>
+          </div>
         </div>
       </div>
     );
@@ -68,51 +70,68 @@ export default async function EventsPage({
     .limit(200);
 
   return (
-    <div className="space-y-6">
+    <div className="px-8 py-8 space-y-6">
+      {/* Header */}
       <div>
-        <h1 className="text-2xl font-semibold">Events</h1>
-        <p className="text-muted-foreground text-sm">
+        <h1 className="text-2xl font-semibold text-slate-900">Events</h1>
+        <p className="text-slate-500 text-sm mt-0.5">
           Showing latest 200 events across your projects.
         </p>
       </div>
+
+      {/* Filter bar */}
       <EventFilters projects={orgProjects} current={sp} />
 
       {rows.length === 0 ? (
-        <div className="rounded-lg border border-dashed p-12 text-center text-muted-foreground">
+        <div className="bg-white rounded-2xl border border-dashed border-slate-200 p-16 text-center text-slate-500">
           No events match your filters.
         </div>
       ) : (
-        <div className="rounded-lg border overflow-hidden">
-          <table className="w-full text-sm">
-            <thead className="bg-muted text-xs uppercase text-muted-foreground">
-              <tr>
-                <th className="text-left px-4 py-2 font-medium">Severity</th>
-                <th className="text-left px-4 py-2 font-medium">Type</th>
-                <th className="text-left px-4 py-2 font-medium">Project</th>
-                <th className="text-left px-4 py-2 font-medium">Message</th>
-                <th className="text-left px-4 py-2 font-medium">When</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y">
-              {rows.map(({ event: e, projectName }) => (
-                <tr key={e.id} className="hover:bg-accent">
-                  <td className="px-4 py-2">
-                    <SeverityBadge severity={e.severity} />
-                  </td>
-                  <td className="px-4 py-2 font-mono text-xs">{e.type}</td>
-                  <td className="px-4 py-2 text-muted-foreground">{projectName}</td>
-                  <td className="px-4 py-2 max-w-md">
-                    <Link href={`/dashboard/events/${e.id}`} className="block truncate hover:underline">
-                      {e.message ?? e.pattern ?? "(no message)"}
-                    </Link>
-                  </td>
-                  <td className="px-4 py-2 text-muted-foreground text-xs whitespace-nowrap">
-                    {formatRelativeTime(e.occurredAt)}
-                  </td>
+        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-slate-100 bg-slate-50 sticky top-0">
+                  <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide">Severity</th>
+                  <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide">Type</th>
+                  <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide">Project</th>
+                  <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide">Message</th>
+                  <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide">When</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {rows.map(({ event: e, projectName }, idx) => (
+                  <tr
+                    key={e.id}
+                    className={`border-b border-slate-50 hover:bg-slate-50/80 transition-colors ${
+                      idx % 2 === 0 ? "" : "bg-slate-50/30"
+                    }`}
+                  >
+                    <td className="px-5 py-3">
+                      <SeverityBadge severity={e.severity} />
+                    </td>
+                    <td className="px-5 py-3">
+                      <span className="font-mono text-xs bg-slate-100 text-slate-700 px-2 py-0.5 rounded">
+                        {e.type}
+                      </span>
+                    </td>
+                    <td className="px-5 py-3 text-slate-500 text-xs">{projectName}</td>
+                    <td className="px-5 py-3 max-w-md">
+                      <Link
+                        href={`/dashboard/events/${e.id}`}
+                        className="block truncate text-slate-800 hover:text-green-700 hover:underline"
+                      >
+                        {e.message ?? e.pattern ?? "(no message)"}
+                      </Link>
+                    </td>
+                    <td className="px-5 py-3 text-slate-400 text-xs whitespace-nowrap">
+                      {formatRelativeTime(e.occurredAt)}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
     </div>
@@ -130,13 +149,13 @@ function parseRange(range: string | undefined): number {
 }
 
 function SeverityBadge({ severity }: { severity: string }) {
-  const colors: Record<string, string> = {
-    low: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300",
-    medium: "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300",
-    high: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300",
+  const styles: Record<string, string> = {
+    high: "bg-red-50 text-red-700 border border-red-200",
+    medium: "bg-amber-50 text-amber-700 border border-amber-200",
+    low: "bg-blue-50 text-blue-700 border border-blue-200",
   };
   return (
-    <span className={`text-xs uppercase rounded-full px-2 py-0.5 font-medium ${colors[severity] ?? ""}`}>
+    <span className={`text-[10px] uppercase font-semibold tracking-wide rounded-full px-2.5 py-0.5 ${styles[severity] ?? "bg-slate-100 text-slate-600 border border-slate-200"}`}>
       {severity}
     </span>
   );
