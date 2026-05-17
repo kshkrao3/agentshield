@@ -1,0 +1,12 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "cloud-dev",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["dev"],
+      "rootDir": "/Users/gjrao/Documents/Projects/AI/Research/agentshield/cloud",
+      "port": 6001
+    }
+  ]
+}
