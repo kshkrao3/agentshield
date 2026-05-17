@@ -16,7 +16,7 @@
     "cf:preview": "opennextjs-cloudflare preview",
     "cf:deploy": "opennextjs-cloudflare deploy",
     "worker:dev": "wrangler dev workers/ingest/index.ts --local --port 6002",
-    "worker:deploy": "wrangler deploy workers/ingest/index.ts"
+    "worker:deploy": "wrangler deploy workers/ingest/index.ts --env ingest"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",

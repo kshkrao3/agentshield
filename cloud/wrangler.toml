@@ -10,12 +10,12 @@ NEXT_PUBLIC_APP_URL = "https://agentshield-cloud.kshkrao3.workers.dev"
 [[d1_databases]]
 binding = "DB"
 database_name = "agentshield-cloud"
-database_id = "e1145809-e476-4fee-bf02-b131678a7cdb"
+database_id = "987ff628-c77d-492d-bda6-44f09e880fb3"
 migrations_dir = "drizzle/migrations"
 
 [[kv_namespaces]]
 binding = "KV"
-id = "2e33db0200ac4bd68b971236b2e5368e"
+id = "29f3c1032a574f2581129a627e3c12cf"
 
 [[r2_buckets]]
 binding = "EVENT_LOGS"
@@ -30,11 +30,11 @@ main = "workers/ingest/index.ts"
 [[env.ingest.d1_databases]]
 binding = "DB"
 database_name = "agentshield-cloud"
-database_id = "e1145809-e476-4fee-bf02-b131678a7cdb"
+database_id = "987ff628-c77d-492d-bda6-44f09e880fb3"
 
 [[env.ingest.kv_namespaces]]
 binding = "KV"
-id = "2e33db0200ac4bd68b971236b2e5368e"
+id = "29f3c1032a574f2581129a627e3c12cf"
 
 [[env.ingest.r2_buckets]]
 binding = "EVENT_LOGS"
