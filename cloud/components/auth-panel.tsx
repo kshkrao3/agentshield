@@ -1,9 +1,9 @@
 import { LogoFull } from "@/components/logo";
 
 const FLOATING_EVENTS = [
-  { label: "Injection blocked", dot: "bg-red-400", delay: "0s", duration: "9s", left: "18%" },
-  { label: "Tool misuse · high", dot: "bg-orange-400", delay: "3s", duration: "11s", left: "55%" },
-  { label: "Memory drift detected", dot: "bg-yellow-400", delay: "6s", duration: "10s", left: "30%" },
+  { label: "Injection blocked", dot: "bg-red-400", delay: "0s", duration: "9s", left: "12%", bottom: "54%" },
+  { label: "Tool misuse · high", dot: "bg-orange-400", delay: "3s", duration: "11s", left: "48%", bottom: "62%" },
+  { label: "Memory drift detected", dot: "bg-yellow-400", delay: "6s", duration: "10s", left: "22%", bottom: "46%" },
 ];
 
 export function AuthPanel() {
@@ -73,9 +73,10 @@ export function AuthPanel() {
         {FLOATING_EVENTS.map((ev) => (
           <div
             key={ev.label}
-            className="absolute bottom-[28%]"
+            className="absolute"
             style={{
               left: ev.left,
+              bottom: ev.bottom,
               animation: `float-fade ${ev.duration} ease-in-out ${ev.delay} infinite`,
             }}
           >
