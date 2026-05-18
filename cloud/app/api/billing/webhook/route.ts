@@ -4,76 +4,69 @@ import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { getDb } from "@/lib/db";
 import { organization } from "@/drizzle/schema";
 import { eq } from "drizzle-orm";
-import { verifyLsWebhook, planFromVariantId } from "@/lib/ls";
+import { verifyPolarWebhook, planFromProductId } from "@/lib/polar";
 
 export async function POST(req: Request) {
   const { env } = getCloudflareContext();
 
-  let payload: unknown;
+  let event: Awaited<ReturnType<typeof verifyPolarWebhook>>;
   try {
-    payload = await verifyLsWebhook(req, env.LEMONSQUEEZY_WEBHOOK_SECRET);
+    event = await verifyPolarWebhook(req, env.POLAR_WEBHOOK_SECRET);
   } catch {
     return NextResponse.json({ error: "invalid_signature" }, { status: 400 });
   }
 
-  const p = payload as {
-    meta: { event_name: string; custom_data?: { org_id?: string } };
+  const db = getDb();
+  const { type, data } = event as unknown as {
+    type: string;
     data: {
       id: string;
-      attributes: {
-        customer_id: number;
-        variant_id: number;
-        status: string;
-        renews_at: string | null;
-        ends_at: string | null;
-      };
+      customerId: string;
+      productId: string;
+      status: string;
+      currentPeriodEnd: Date | null;
+      metadata?: Record<string, unknown>;
     };
   };
 
-  const event = p.meta.event_name;
-  const orgId = p.meta.custom_data?.org_id;
-  const db = getDb();
+  const orgId = typeof data.metadata?.org_id === "string" ? data.metadata.org_id : undefined;
 
   if (
-    event === "subscription_created" ||
-    event === "subscription_updated" ||
-    event === "subscription_resumed"
+    type === "subscription.created" ||
+    type === "subscription.updated"
   ) {
     if (!orgId) return NextResponse.json({ received: true });
-    const attrs = p.data.attributes;
 
-    // If LS sends updated with status=expired/cancelled, treat as revocation
-    if (attrs.status === "expired" || attrs.status === "cancelled") {
+    if (data.status === "canceled" || data.status === "revoked") {
       await db
         .update(organization)
         .set({
           plan: "free",
           lsSubscriptionId: null,
           lsVariantId: null,
-          subscriptionStatus: attrs.status,
+          lsCustomerId: null,
+          subscriptionStatus: data.status,
           currentPeriodEnd: null,
         })
         .where(eq(organization.id, orgId));
       return NextResponse.json({ received: true });
     }
 
-    const variantId = String(attrs.variant_id);
-    const plan = planFromVariantId(variantId);
-    const periodEnd = attrs.renews_at ? new Date(attrs.renews_at) : null;
+    const plan = planFromProductId(data.productId);
     await db
       .update(organization)
       .set({
         plan,
-        lsSubscriptionId: p.data.id,
-        lsVariantId: variantId,
-        lsCustomerId: String(attrs.customer_id),
-        subscriptionStatus: attrs.status,
-        currentPeriodEnd: periodEnd,
+        lsSubscriptionId: data.id,
+        lsVariantId: data.productId,
+        lsCustomerId: data.customerId,
+        subscriptionStatus: data.status,
+        currentPeriodEnd: data.currentPeriodEnd ?? null,
       })
       .where(eq(organization.id, orgId));
   }
 
-  if (event === "subscription_cancelled" || event === "subscription_expired") {
+  if (type === "subscription.canceled" || type === "subscription.revoked") {
     if (!orgId) return NextResponse.json({ received: true });
     await db
       .update(organization)
@@ -81,7 +74,8 @@ export async function POST(req: Request) {
         plan: "free",
         lsSubscriptionId: null,
         lsVariantId: null,
-        subscriptionStatus: event === "subscription_cancelled" ? "cancelled" : "expired",
+        lsCustomerId: null,
+        subscriptionStatus: type === "subscription.canceled" ? "cancelled" : "expired",
         currentPeriodEnd: null,
       })
       .where(eq(organization.id, orgId));

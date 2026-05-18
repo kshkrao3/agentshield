@@ -1,6 +1,6 @@
 /**
  * Cloudflare bindings injected at runtime via wrangler.toml.
- * Used by lib/db.ts, lib/auth.ts, lib/stripe.ts via getCloudflareContext().
+ * Used by lib/db.ts, lib/auth.ts, lib/polar.ts via getCloudflareContext().
  */
 declare global {
   interface CloudflareEnv {
@@ -11,11 +11,10 @@ declare global {
     BETTER_AUTH_URL: string;
     GITHUB_CLIENT_ID: string;
     GITHUB_CLIENT_SECRET: string;
-    LEMONSQUEEZY_API_KEY: string;
-    LEMONSQUEEZY_WEBHOOK_SECRET: string;
-    LEMONSQUEEZY_STORE_ID: string;
-    LEMONSQUEEZY_PRO_VARIANT_ID: string;
-    LEMONSQUEEZY_TEAM_VARIANT_ID: string;
+    POLAR_ACCESS_TOKEN: string;
+    POLAR_WEBHOOK_SECRET: string;
+    POLAR_PRO_PRODUCT_ID: string;
+    POLAR_TEAM_PRODUCT_ID: string;
     NEXT_PUBLIC_APP_URL: string;
   }
 }

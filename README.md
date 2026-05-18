@@ -1,12 +1,29 @@
 # agentshield
 
-Runtime security middleware for LLM agents. Drop it into your existing agent framework — no refactor required.
+Runtime security middleware for LLM agents. **Zero external calls. No data leaves your environment.**
+
+Drop it into your existing agent framework — no refactor required.
 
 **Defends against:**
 - Prompt injection (user input hijacking system instructions)
 - Tool misuse & privilege escalation (agents calling tools outside intended scope)
 - Memory poisoning (persistent agent memory corrupted across sessions)
 - RAG context injection (poisoned document chunks injecting instructions)
+
+---
+
+## Why agentshield vs. cloud-only solutions
+
+| | agentshield | Cloud-dependent alternatives |
+|---|---|---|
+| External API calls | None — all logic runs in-process | Every check phones home |
+| Latency | <1ms (pattern matching) | 50–500ms round-trip |
+| Data leaves environment | Never | On every agent turn |
+| Works offline / air-gapped | Yes | No |
+| Self-hostable | Yes (Apache 2.0) | Rarely |
+| Optional cloud dashboard | Yes ([agentshield cloud](https://agentshield.dev)) | Required |
+
+The core SDK never makes a network call. Violations are caught locally — your agent's inputs and outputs stay in your stack.
 
 ---
 
