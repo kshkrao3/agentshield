@@ -27,6 +27,9 @@ bucket_name = "agentshield-event-logs"
 name = "agentshield-ingest"
 main = "workers/ingest/index.ts"
 
+[env.ingest.vars]
+NEXT_PUBLIC_APP_URL = "https://agentshield-cloud.kshkrao3.workers.dev"
+
 [[env.ingest.d1_databases]]
 binding = "DB"
 database_name = "agentshield-cloud"
